@@ -5,15 +5,15 @@ namespace MinersWatch
 {
     public class StaminaSystem : MonoBehaviour
     {
-        public float maxStamina { get; private set; }
+        [SerializeField] private float _maxStamina = 100f;
+        public float maxStamina => _maxStamina;
         public float currentStamina { get; private set; }
 
         public event Action<float, float> OnChanged;
 
-        public StaminaSystem(float maxStamina = 100f)
+        private void Awake()
         {
-            this.maxStamina = maxStamina;
-            this.currentStamina = maxStamina;
+            currentStamina = _maxStamina;
         }
 
         public bool Consume(float amount)
