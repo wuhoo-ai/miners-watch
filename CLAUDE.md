@@ -17,6 +17,10 @@
 // ✅ 提供公开 Init() 方法，测试手动调用
 public void Init() { /* 初始化逻辑 */ }
 private void Awake() => Init();
+
+// ❌ Time.time 在 EditMode 中始终为 0
+// ✅ 冷却计时器初始化为负值
+private float lastActionTime = -999f;
 ```
 
 ### [SerializeField] 字段
