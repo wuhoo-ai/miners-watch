@@ -14,6 +14,7 @@ namespace MinersWatch
 
         private void Awake()
         {
+            if (_maxStamina <= 0f) _maxStamina = 100f;
             _currentStamina = _maxStamina;
         }
 
