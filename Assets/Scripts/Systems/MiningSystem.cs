@@ -27,7 +27,8 @@ namespace MinersWatch
 
         private void Awake()
         {
-            lastMineTime = -mineCooldown; // allow first mine immediately
+            lastMineTime = -999f; // allow first mine immediately (EditMode Time.time=0)
+            if (mineCooldown <= 0f) mineCooldown = 0.5f;
             stamina = GetComponent<StaminaSystem>() ?? GetComponentInParent<StaminaSystem>();
             if (stamina == null)
             {
