@@ -12,9 +12,9 @@ namespace MinersWatch
 
         public event Action<float, float> OnChanged;
 
-        private void Awake()
+        private void OnEnable()
         {
-            if (_maxStamina <= 0f) _maxStamina = 100f;
+            _maxStamina = 100f;
             _currentStamina = _maxStamina;
         }
 
