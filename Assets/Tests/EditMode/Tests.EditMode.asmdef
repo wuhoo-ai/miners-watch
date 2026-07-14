@@ -1,12 +1,12 @@
 {
-    "name": "Tests.PlayMode",
-    "rootNamespace": "MinersWatch.Tests.PlayMode",
+    "name": "Tests.EditMode",
+    "rootNamespace": "MinersWatch.Tests.EditMode",
     "references": [
-        "MinersWatch.Game",
-        "UnityEngine.TestRunner",
-        "Unity.InputSystem"
+        "MinersWatch.Game"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
