@@ -26,9 +26,6 @@ namespace MinersWatch
 
         public void Init() { } // hook for test compatibility
 
-        private void OnTriggerStay2D(Collider2D other) { /* runtime only */ }
-        private void OnTriggerExit2D(Collider2D other)  { /* runtime only */ }
-
         public bool TryMine(MineralNode node)
         {
             if (node == null) return false;
