@@ -15,12 +15,14 @@ namespace MinersWatch
 
         public event Action<float, float> OnChanged;
 
-        private void Awake()
+        /// <summary>Explicit init for EditMode tests where Awake may not fire.</summary>
+        public void Init()
         {
-            // Guard against Unity serialization zeroing in EditMode
             if (_maxStamina <= 0f) _maxStamina = DefaultMax;
-            if (_currentStamina <= 0f) _currentStamina = _maxStamina;
+            _currentStamina = _maxStamina;
         }
+
+        private void Awake() => Init();
 
         public bool Consume(float amount)
         {
