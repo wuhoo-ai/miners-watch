@@ -10,7 +10,7 @@ namespace MinersWatch
         [SerializeField] private float mineCooldown = 0.5f;
         [SerializeField] private float mineDistance = 1.5f;
 
-        [field: SerializeField] public StaminaSystem Stamina { get; private set; }
+        [field: SerializeField] public StaminaSystem Stamina { get; set; }
         private MineralNode currentTarget;
         private float lastMineTime;
 
