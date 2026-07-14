@@ -21,8 +21,6 @@ jobs:
         with:
           path: Library
           key: Library-Tests-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
-          restore-keys: |
-            Library-Tests-
 
       - name: Run EditMode tests
         uses: game-ci/unity-test-runner@v4
