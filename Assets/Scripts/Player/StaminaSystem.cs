@@ -7,13 +7,14 @@ namespace MinersWatch
     {
         [SerializeField] private float _maxStamina = 100f;
         public float maxStamina => _maxStamina;
-        public float currentStamina { get; private set; }
+        [System.NonSerialized] private float _currentStamina;
+        public float currentStamina => _currentStamina;
 
         public event Action<float, float> OnChanged;
 
         private void Awake()
         {
-            currentStamina = _maxStamina;
+            _currentStamina = _maxStamina;
         }
 
         public bool Consume(float amount)
@@ -21,12 +22,12 @@ namespace MinersWatch
             if (amount < 0f) return false;
             if (amount == 0f) return true;
 
-            if (currentStamina < amount)
+            if (_currentStamina < amount)
                 return false;
 
-            currentStamina -= amount;
-            currentStamina = ClampStamina(currentStamina);
-            OnChanged?.Invoke(currentStamina, maxStamina);
+            _currentStamina -= amount;
+            _currentStamina = ClampStamina(_currentStamina);
+            OnChanged?.Invoke(_currentStamina, _maxStamina);
             return true;
         }
 
@@ -35,21 +36,21 @@ namespace MinersWatch
             if (amount < 0f) return;
             if (amount == 0f) return;
 
-            currentStamina += amount;
-            currentStamina = ClampStamina(currentStamina);
-            OnChanged?.Invoke(currentStamina, maxStamina);
+            _currentStamina += amount;
+            _currentStamina = ClampStamina(_currentStamina);
+            OnChanged?.Invoke(_currentStamina, _maxStamina);
         }
 
         public void RestoreFull()
         {
-            if (currentStamina >= maxStamina) return;
-            currentStamina = maxStamina;
-            OnChanged?.Invoke(currentStamina, maxStamina);
+            if (_currentStamina >= _maxStamina) return;
+            _currentStamina = _maxStamina;
+            OnChanged?.Invoke(_currentStamina, _maxStamina);
         }
 
         private float ClampStamina(float value)
         {
-            return UnityEngine.Mathf.Clamp(value, 0f, maxStamina);
+            return UnityEngine.Mathf.Clamp(value, 0f, _maxStamina);
         }
     }
 }
