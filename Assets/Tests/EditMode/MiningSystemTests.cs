@@ -16,6 +16,7 @@ namespace MinersWatch.Tests.EditMode
             playerObj = new GameObject("Player");
             stamina = playerObj.AddComponent<StaminaSystem>();
             mining = playerObj.AddComponent<MiningSystem>();
+            mining.Stamina = stamina; // explicit injection — Awake may miss it in EditMode
             stamina.Init();
         }
 
