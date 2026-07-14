@@ -11,7 +11,8 @@ namespace MinersWatch.Tests.EditMode
         {
             var go = new GameObject("Test");
             var s = go.AddComponent<StaminaSystem>();
-            Assert.IsNotNull(s);
+            // Call Init explicitly — EditMode doesn't run Awake reliably
+            s.Init();
             Assert.AreEqual(100f, s.maxStamina);
             Assert.AreEqual(100f, s.currentStamina);
             Object.DestroyImmediate(go);
@@ -22,8 +23,8 @@ namespace MinersWatch.Tests.EditMode
         {
             var go = new GameObject("Test");
             var s = go.AddComponent<StaminaSystem>();
-            bool ok = s.Consume(30f);
-            Assert.IsTrue(ok);
+            s.Init();
+            Assert.IsTrue(s.Consume(30f));
             Assert.AreEqual(70f, s.currentStamina);
             Object.DestroyImmediate(go);
         }
@@ -33,8 +34,8 @@ namespace MinersWatch.Tests.EditMode
         {
             var go = new GameObject("Test");
             var s = go.AddComponent<StaminaSystem>();
-            bool ok = s.Consume(101f);
-            Assert.IsFalse(ok);
+            s.Init();
+            Assert.IsFalse(s.Consume(101f));
             Assert.AreEqual(100f, s.currentStamina);
             Object.DestroyImmediate(go);
         }

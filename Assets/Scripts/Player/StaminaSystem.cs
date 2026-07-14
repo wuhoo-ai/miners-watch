@@ -5,17 +5,21 @@ namespace MinersWatch
 {
     public class StaminaSystem : MonoBehaviour
     {
-        [SerializeField] private float _maxStamina = 100f;
+        private const float DefaultMax = 100f;
+
+        [SerializeField] private float _maxStamina = DefaultMax;
+        [SerializeField] private float _currentStamina = DefaultMax;
+
         public float maxStamina => _maxStamina;
-        [System.NonSerialized] private float _currentStamina;
         public float currentStamina => _currentStamina;
 
         public event Action<float, float> OnChanged;
 
-        private void OnEnable()
+        private void Awake()
         {
-            _maxStamina = 100f;
-            _currentStamina = _maxStamina;
+            // Guard against Unity serialization zeroing in EditMode
+            if (_maxStamina <= 0f) _maxStamina = DefaultMax;
+            if (_currentStamina <= 0f) _currentStamina = _maxStamina;
         }
 
         public bool Consume(float amount)
@@ -27,7 +31,7 @@ namespace MinersWatch
                 return false;
 
             _currentStamina -= amount;
-            _currentStamina = ClampStamina(_currentStamina);
+            _currentStamina = Mathf.Clamp(_currentStamina, 0f, _maxStamina);
             OnChanged?.Invoke(_currentStamina, _maxStamina);
             return true;
         }
@@ -38,7 +42,7 @@ namespace MinersWatch
             if (amount == 0f) return;
 
             _currentStamina += amount;
-            _currentStamina = ClampStamina(_currentStamina);
+            _currentStamina = Mathf.Clamp(_currentStamina, 0f, _maxStamina);
             OnChanged?.Invoke(_currentStamina, _maxStamina);
         }
 
@@ -47,11 +51,6 @@ namespace MinersWatch
             if (_currentStamina >= _maxStamina) return;
             _currentStamina = _maxStamina;
             OnChanged?.Invoke(_currentStamina, _maxStamina);
-        }
-
-        private float ClampStamina(float value)
-        {
-            return UnityEngine.Mathf.Clamp(value, 0f, _maxStamina);
         }
     }
 }
