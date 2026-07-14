@@ -111,20 +111,12 @@ namespace MinersWatch.Tests.PlayMode
 
         private void Press(KeyControl key)
         {
-            using (StateEvent.From(keyboard, out var eventPtr))
-            {
-                key.WriteIntoEvent(eventPtr, 1f);
-                InputSystem.QueueEvent(eventPtr);
-            }
+            key.ApplyValue(1f);
         }
 
         private void Release(KeyControl key)
         {
-            using (StateEvent.From(keyboard, out var eventPtr))
-            {
-                key.WriteIntoEvent(eventPtr, 0f);
-                InputSystem.QueueEvent(eventPtr);
-            }
+            key.ApplyValue(0f);
         }
     }
 }
