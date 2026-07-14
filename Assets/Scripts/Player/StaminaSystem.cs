@@ -8,7 +8,7 @@ namespace MinersWatch
         private const float DefaultMax = 100f;
 
         [SerializeField] private float _maxStamina = DefaultMax;
-        [SerializeField] private float _currentStamina = DefaultMax;
+        private float _currentStamina = DefaultMax;
 
         public float maxStamina => _maxStamina;
         public float currentStamina => _currentStamina;

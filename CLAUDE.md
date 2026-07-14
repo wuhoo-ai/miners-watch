@@ -25,13 +25,10 @@ private float lastActionTime = -999f;
 
 ### [SerializeField] 字段
 ```csharp
-// ❌ 依赖 C# field initializer — Unity 序列化会覆盖为 0
-[SerializeField] private float _maxStamina = 100f; // EditMode 下变成 0
-
-// ✅ 加上 Awake guard
-private void Awake() {
-    if (_maxStamina <= 0f) _maxStamina = 100f;
-}
+// ❌ 可变状态字段加 [SerializeField] — Unity 二次序列化会在 Awake/Init 后覆盖为 0
+// ✅ 只有配置/设计时字段加 [SerializeField]（maxStamina），运行时字段不加（currentStamina）
+[SerializeField] private float _maxStamina = 100f;  // 设计师可调
+private float _currentStamina = 100f;                // 运行时状态，不持久化
 ```
 
 ### Input System
