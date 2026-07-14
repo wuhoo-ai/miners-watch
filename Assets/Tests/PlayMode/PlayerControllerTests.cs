@@ -2,6 +2,8 @@ using System.Collections;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using MinersWatch;
@@ -15,8 +17,8 @@ namespace MinersWatch.Tests.PlayMode
         private Rigidbody2D rb;
         private Keyboard keyboard;
 
-        [UnitySetUp]
-        public IEnumerator SetUp()
+        [SetUp]
+        public void SetUp()
         {
             // Create test scene objects
             var scene = SceneManager.GetActiveScene();
@@ -39,16 +41,13 @@ namespace MinersWatch.Tests.PlayMode
             keyboard = InputSystem.AddDevice<Keyboard>();
             if (keyboard == null)
                 keyboard = Keyboard.current;
-
-            yield return new WaitForFixedUpdate();
         }
 
-        [UnityTearDown]
-        public IEnumerator TearDown()
+        [TearDown]
+        public void TearDown()
         {
             if (player != null)
                 Object.Destroy(player);
-            yield return null;
         }
 
         [UnityTest]
