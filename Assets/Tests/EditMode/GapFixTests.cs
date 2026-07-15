@@ -45,6 +45,7 @@ namespace MinersWatch.Tests.EditMode
         {
             var go = new GameObject("Core");
             var core = go.AddComponent<BaseCore>();
+            core.Init(200);
             core.TakeDamage(50);
             Assert.AreEqual(150, core.CurrentHP);
             Assert.IsFalse(core.IsDestroyed);
@@ -56,6 +57,7 @@ namespace MinersWatch.Tests.EditMode
         {
             var go = new GameObject("Core");
             var core = go.AddComponent<BaseCore>();
+            core.Init(200);
             core.TakeDamage(200);
             Assert.AreEqual(0, core.CurrentHP);
             Assert.IsTrue(core.IsDestroyed);

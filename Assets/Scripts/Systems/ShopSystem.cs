@@ -21,7 +21,10 @@ namespace MinersWatch
             _inventory = inventory;
             _upgrades = upgrades;
             if (_upgrades != null)
+            {
+                _upgrades.OnUpgraded -= OnUpgradeApplied; // prevent double-sub
                 _upgrades.OnUpgraded += OnUpgradeApplied;
+            }
         }
 
         private void OnUpgradeApplied(UpgradeType type)
@@ -38,6 +41,14 @@ namespace MinersWatch
         {
             if (_inventory == null) _inventory = GetComponent<InventorySystem>() ?? GetComponentInParent<InventorySystem>();
             if (_upgrades == null) _upgrades = GetComponent<UpgradeSystem>() ?? GetComponentInParent<UpgradeSystem>();
+            if (_upgrades != null)
+                _upgrades.OnUpgraded += OnUpgradeApplied;
+        }
+
+        private void OnDestroy()
+        {
+            if (_upgrades != null)
+                _upgrades.OnUpgraded -= OnUpgradeApplied;
         }
 
         /// <summary>Sell all minerals in inventory. Returns total gold earned.</summary>
