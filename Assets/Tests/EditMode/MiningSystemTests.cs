@@ -6,8 +6,6 @@ namespace MinersWatch.Tests.EditMode
 {
     public class MiningSystemTests
     {
-        // T003 mining tests deferred — EditMode component wiring unreliable.
-        // Will be rewritten as PlayMode tests in a follow-up task.
         [Test]
         public void CanCreateMiningComponent()
         {
@@ -17,6 +15,7 @@ namespace MinersWatch.Tests.EditMode
             var inv = player.AddComponent<InventorySystem>();
             inv.Init();
             var ms = player.AddComponent<MiningSystem>();
+            ms.Init();
             ms.Stamina = ss;
             ms.Inventory = inv;
             Assert.IsNotNull(ms.Stamina);
@@ -35,6 +34,7 @@ namespace MinersWatch.Tests.EditMode
             var inv = player.AddComponent<InventorySystem>();
             inv.Init();
             var ms = player.AddComponent<MiningSystem>();
+            ms.Init();
             ms.Stamina = ss;
             ms.Inventory = inv;
 
@@ -48,7 +48,7 @@ namespace MinersWatch.Tests.EditMode
             nodeObj.transform.position = player.transform.position;
 
             bool result = ms.TryMine(node);
-            Assert.IsTrue(result);
+            Assert.IsTrue(result, "TryMine should succeed");
             Assert.AreEqual(1, inv.GetCount(MineralType.Iron));
             Assert.AreEqual(98f, ss.currentStamina); // 100 - 2
 

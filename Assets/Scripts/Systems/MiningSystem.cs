@@ -18,14 +18,14 @@ namespace MinersWatch
         public List<MineralType> MinedMinerals { get; private set; } = new List<MineralType>();
         public event Action<MineralType> OnMineralMined;
 
-        private void Awake()
+        private void Awake() => Init();
+
+        public void Init()
         {
             lastMineTime = -999f;
             if (mineCooldown <= 0f) mineCooldown = 0.5f;
-            Stamina = GetComponent<StaminaSystem>() ?? GetComponentInParent<StaminaSystem>();
+            if (Stamina == null) Stamina = GetComponent<StaminaSystem>() ?? GetComponentInParent<StaminaSystem>();
         }
-
-        public void Init() { } // hook for test compatibility
 
         public bool TryMine(MineralNode node)
         {
