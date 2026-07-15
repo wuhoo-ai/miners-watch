@@ -3,10 +3,6 @@ using UnityEngine;
 
 namespace MinersWatch.Editor
 {
-    /// <summary>
-    /// Auto-configures pixel art texture import settings.
-    /// Point filter (no blur), uncompressed, spritesheet slicing.
-    /// </summary>
     public class AutoImportPixelArt : AssetPostprocessor
     {
         private void OnPreprocessTexture()
@@ -19,21 +15,16 @@ namespace MinersWatch.Editor
             importer.textureCompression = TextureImporterCompression.Uncompressed;
             importer.spritePixelsPerUnit = 16;
 
-            // Spritesheet auto-slice: player_* spritesheets are horizontal strips
-            if (assetPath.Contains("player_") && !assetPath.Contains("_0"))
+            if (assetPath.Contains("player_") || assetPath.Contains("enemy_"))
             {
-                // player_idle.png = 192×48 → 4 frames × 48
-                // player_walk.png = 288×48 → 6 frames × 48
-                // player_mine.png = 192×48 → 4 frames × 48
-                // player_attack.png = 192×48 → 4 frames × 48
-                importer.spriteImportMode = SpriteImportMode.Multiple;
+                int frameW, frameH, frames;
+                GetSpriteInfo(assetPath, out frameW, out frameH, out frames);
 
-                var meta = new SpriteMetaData[GetFrameCount(assetPath)];
-                int frameW = 48;
-                int frameH = 48;
+                importer.spriteImportMode = SpriteImportMode.Multiple;
+                var meta = new SpriteMetaData[frames];
                 string baseName = System.IO.Path.GetFileNameWithoutExtension(assetPath);
 
-                for (int i = 0; i < meta.Length; i++)
+                for (int i = 0; i < frames; i++)
                 {
                     meta[i] = new SpriteMetaData
                     {
@@ -47,13 +38,18 @@ namespace MinersWatch.Editor
             }
         }
 
-        private static int GetFrameCount(string path)
+        private static void GetSpriteInfo(string path, out int w, out int h, out int frames)
         {
-            if (path.Contains("player_idle") || path.Contains("player_mine") || path.Contains("player_attack"))
-                return 4;
-            if (path.Contains("player_walk"))
-                return 6;
-            return 1;
+            if (path.Contains("player_"))
+            {
+                w = h = 48;
+                frames = path.Contains("walk") ? 6 : 4;
+            }
+            else
+            {
+                w = h = 32;
+                frames = path.Contains("lavabeast") ? 4 : 2;
+            }
         }
     }
 }
