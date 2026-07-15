@@ -38,19 +38,17 @@ namespace MinersWatch.Tests.EditMode
             ms.Stamina = ss;
             ms.Inventory = inv;
 
-            // Create a mineral node with Iron data
             var nodeObj = new GameObject("IronNode");
             var node = nodeObj.AddComponent<MineralNode>();
-            var data = MineralData.Create(MineralType.Iron, "Iron", 2f, 15f, 
+            var data = MineralData.Create(MineralType.Iron, "Iron", 2f, 15f,
                 new[] { DepthLevel.Shallow, DepthLevel.Medium });
             node.Init(data);
-            // Place node close to player
             nodeObj.transform.position = player.transform.position;
 
             bool result = ms.TryMine(node);
             Assert.IsTrue(result, "TryMine should succeed");
             Assert.AreEqual(1, inv.GetCount(MineralType.Iron));
-            Assert.AreEqual(98f, ss.currentStamina); // 100 - 2
+            Assert.AreEqual(98f, ss.currentStamina);
 
             Object.DestroyImmediate(nodeObj);
             Object.DestroyImmediate(player);
