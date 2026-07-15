@@ -95,6 +95,8 @@ namespace MinersWatch
                 {
                     0 => new WaveConfig { waveNumber = 1, enemyCount = 3, enemyType = EnemyType.Shadow },
                     1 => new WaveConfig { waveNumber = 2, enemyCount = 4, enemyType = EnemyType.Lavabeast },
+                    3 => new WaveConfig { waveNumber = 3, enemyCount = 3, enemyType = EnemyType.Lavabeast },
+                    4 => new WaveConfig { waveNumber = 5, enemyCount = 1, enemyType = EnemyType.Guardian },
                     _ => new WaveConfig { waveNumber = 3, enemyCount = 3, enemyType = EnemyType.Lavabeast },
                 },
                 _ => new WaveConfig { waveNumber = 1, enemyCount = 3, enemyType = EnemyType.Rockworm },

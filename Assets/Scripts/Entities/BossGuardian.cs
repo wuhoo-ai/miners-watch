@@ -89,5 +89,7 @@ namespace MinersWatch
 
         /// <summary>Reset slam timer (test helper).</summary>
         public void ResetSlamTimer() => _slamTimer = 0f;
+
+        protected override EnemyDef GetDef() => EnemyPresets.Guardian;
     }
 }

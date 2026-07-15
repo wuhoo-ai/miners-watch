@@ -69,8 +69,11 @@ namespace MinersWatch
             _gold -= cost;
             _levels[type] = GetLevel(type) + 1;
             OnGoldChanged?.Invoke(_gold);
+            OnUpgraded?.Invoke(type);
             return true;
         }
+
+        public event System.Action<UpgradeType> OnUpgraded;
 
         public void AddGold(int amount)
         {

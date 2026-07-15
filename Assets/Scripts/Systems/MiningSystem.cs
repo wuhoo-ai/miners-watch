@@ -12,6 +12,7 @@ namespace MinersWatch
 
         public StaminaSystem Stamina;
         public InventorySystem Inventory;
+        public UpgradeSystem Upgrades;
         private MineralNode currentTarget;
         private float lastMineTime;
 
@@ -39,7 +40,7 @@ namespace MinersWatch
             var data = node.MineralData;
             if (data == null) return false;
 
-            if (!Stamina.Consume(data.staminaCost)) return false;
+            if (!Stamina.Consume(GetEffectiveCost(data.staminaCost))) return false;
 
             lastMineTime = Time.time;
             MinedMinerals.Add(data.mineralType);
@@ -68,6 +69,18 @@ namespace MinersWatch
         {
             if (Input.GetKeyDown(KeyCode.E) && currentTarget != null)
                 TryMine(currentTarget);
+        }
+        /// <summary>Apply pickaxe upgrade multiplier to stamina cost.</summary>
+        private float GetEffectiveCost(float baseCost)
+        {
+            if (Upgrades == null) return baseCost;
+            int level = Upgrades.GetLevel(UpgradeType.Pickaxe);
+            return level switch
+            {
+                2 => baseCost * 0.7f,
+                3 => baseCost * 0.5f,
+                _ => baseCost,
+            };
         }
     }
 }

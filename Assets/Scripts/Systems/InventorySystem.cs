@@ -30,6 +30,12 @@ namespace MinersWatch
             if (_maxStackSize <= 0) _maxStackSize = 5;
         }
 
+        /// <summary>Set capacity from backpack upgrade level.</summary>
+        public void SetCapacity(int capacity)
+        {
+            _capacity = Mathf.Max(1, capacity);
+        }
+
         private void Awake() => Init();
 
         /// <summary>

@@ -20,6 +20,18 @@ namespace MinersWatch
         {
             _inventory = inventory;
             _upgrades = upgrades;
+            if (_upgrades != null)
+                _upgrades.OnUpgraded += OnUpgradeApplied;
+        }
+
+        private void OnUpgradeApplied(UpgradeType type)
+        {
+            if (type == UpgradeType.Backpack && _inventory != null)
+            {
+                int level = _upgrades.GetLevel(UpgradeType.Backpack);
+                int capacity = level switch { 2 => 20, 3 => 30, _ => 10 };
+                _inventory.SetCapacity(capacity);
+            }
         }
 
         private void Awake()
