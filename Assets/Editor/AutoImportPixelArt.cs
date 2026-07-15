@@ -15,7 +15,7 @@ namespace MinersWatch.Editor
             importer.textureCompression = TextureImporterCompression.Uncompressed;
             importer.spritePixelsPerUnit = 16;
 
-            if (assetPath.Contains("player_") || assetPath.Contains("enemy_"))
+            if (assetPath.Contains("player_") || assetPath.Contains("enemy_") || assetPath.Contains("boss_"))
             {
                 int frameW, frameH, frames;
                 GetSpriteInfo(assetPath, out frameW, out frameH, out frames);
@@ -45,10 +45,15 @@ namespace MinersWatch.Editor
                 w = h = 48;
                 frames = path.Contains("walk") ? 6 : 4;
             }
-            else
+            else if (path.Contains("enemy_"))
             {
                 w = h = 32;
                 frames = path.Contains("lavabeast") ? 4 : 2;
+            }
+            else // boss
+            {
+                w = h = 64;
+                frames = 6;
             }
         }
     }
