@@ -11,6 +11,7 @@ namespace MinersWatch
         [SerializeField] private float mineDistance = 1.5f;
 
         public StaminaSystem Stamina;
+        public InventorySystem Inventory;
         private MineralNode currentTarget;
         private float lastMineTime;
 
@@ -42,6 +43,7 @@ namespace MinersWatch
 
             lastMineTime = Time.time;
             MinedMinerals.Add(data.mineralType);
+            Inventory?.AddItem(data.mineralType, data.sellPrice, 1);
             OnMineralMined?.Invoke(data.mineralType);
             Destroy(node.gameObject);
             return true;
