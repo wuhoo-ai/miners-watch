@@ -45,7 +45,11 @@ namespace MinersWatch
             MinedMinerals.Add(data.mineralType);
             Inventory?.AddItem(data.mineralType, data.sellPrice, 1);
             OnMineralMined?.Invoke(data.mineralType);
+#if UNITY_EDITOR
+            DestroyImmediate(node.gameObject);
+#else
             Destroy(node.gameObject);
+#endif
             return true;
         }
 
