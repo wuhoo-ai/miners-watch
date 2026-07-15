@@ -1,9 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MinersWatch
 {
-    /// <summary>Serializable save data. Pure C# — no MonoBehaviour, no Unity types.</summary>
+    /// <summary>Serializable upgrade key-value pair for JsonUtility.</summary>
+    [Serializable]
+    public class UpgradeEntry
+    {
+        public string key;
+        public int value;
+    }
+
+    /// <summary>Serializable save data. No Dictionary — uses List<UpgradeEntry> for JsonUtility compat.</summary>
     [Serializable]
     public class SaveData
     {
@@ -12,7 +21,7 @@ namespace MinersWatch
         public int version;
         public int depthLevel;
         public int gold;
-        public Dictionary<string, int> upgradeLevels; // "Pickaxe"→2, "Armor"→1, "Backpack"→3
+        public List<UpgradeEntry> upgradeLevels;
         public List<InventoryEntry> inventory;
         public bool[] defenseGrid;
         public int waveProgress;
@@ -20,19 +29,29 @@ namespace MinersWatch
         public static SaveData CreateDefault() => new SaveData
         {
             version = CurrentVersion,
-            depthLevel = 0,   // Shallow
+            depthLevel = 0,
             gold = 0,
-            upgradeLevels = new Dictionary<string, int>
+            upgradeLevels = new List<UpgradeEntry>
             {
-                { "Pickaxe", 1 }, { "Armor", 1 }, { "Backpack", 1 }
+                new UpgradeEntry { key = "Pickaxe", value = 1 },
+                new UpgradeEntry { key = "Armor", value = 1 },
+                new UpgradeEntry { key = "Backpack", value = 1 },
             },
             inventory = new List<InventoryEntry>(),
             defenseGrid = new bool[15],
             waveProgress = 0,
         };
+
+        public int GetUpgradeLevel(string key) =>
+            upgradeLevels?.FirstOrDefault(e => e.key == key)?.value ?? 1;
+
+        public void SetUpgradeLevel(string key, int value)
+        {
+            var entry = upgradeLevels?.FirstOrDefault(e => e.key == key);
+            if (entry != null) entry.value = value;
+        }
     }
 
-    /// <summary>Lightweight inventory entry for serialization.</summary>
     [Serializable]
     public class InventoryEntry
     {

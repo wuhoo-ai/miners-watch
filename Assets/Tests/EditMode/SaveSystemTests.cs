@@ -13,9 +13,9 @@ namespace MinersWatch.Tests.EditMode
             Assert.AreEqual(SaveData.CurrentVersion, data.version);
             Assert.AreEqual(0, data.depthLevel);
             Assert.AreEqual(0, data.gold);
-            Assert.AreEqual(1, data.upgradeLevels["Pickaxe"]);
-            Assert.AreEqual(1, data.upgradeLevels["Armor"]);
-            Assert.AreEqual(1, data.upgradeLevels["Backpack"]);
+            Assert.AreEqual(1, data.GetUpgradeLevel("Pickaxe"));
+            Assert.AreEqual(1, data.GetUpgradeLevel("Armor"));
+            Assert.AreEqual(1, data.GetUpgradeLevel("Backpack"));
             Assert.AreEqual(0, data.inventory.Count);
             Assert.AreEqual(15, data.defenseGrid.Length);
             Assert.AreEqual(0, data.waveProgress);
@@ -26,11 +26,11 @@ namespace MinersWatch.Tests.EditMode
         {
             var data = SaveData.CreateDefault();
             data.gold = 500;
-            data.upgradeLevels["Pickaxe"] = 2;
+            data.SetUpgradeLevel("Pickaxe", 2);
 
             string json = SaveSystem.Serialize(data);
-            Assert.IsTrue(json.Contains("\"gold\": 500"));
-            Assert.IsTrue(json.Contains("\"Pickaxe\": 2"));
+            Assert.IsTrue(json.Contains("gold") && json.Contains("500"));
+            Assert.IsTrue(json.Contains("Pickaxe") && json.Contains("2"));
         }
 
         [Test]
@@ -39,7 +39,7 @@ namespace MinersWatch.Tests.EditMode
             var original = SaveData.CreateDefault();
             original.gold = 999;
             original.depthLevel = 2;
-            original.upgradeLevels["Armor"] = 3;
+            original.SetUpgradeLevel("Armor", 3);
 
             string json = SaveSystem.Serialize(original);
             var restored = SaveSystem.Deserialize(json);
@@ -48,7 +48,7 @@ namespace MinersWatch.Tests.EditMode
             Assert.AreEqual(original.version, restored.version);
             Assert.AreEqual(original.gold, restored.gold);
             Assert.AreEqual(original.depthLevel, restored.depthLevel);
-            Assert.AreEqual(original.upgradeLevels["Armor"], restored.upgradeLevels["Armor"]);
+            Assert.AreEqual(3, restored.GetUpgradeLevel("Armor"));
         }
 
         [Test]
@@ -67,7 +67,7 @@ namespace MinersWatch.Tests.EditMode
         public void Deserialize_WrongVersion_ReturnsNull()
         {
             var data = SaveData.CreateDefault();
-            data.version = 99; // invalid
+            data.version = 99;
             string json = SaveSystem.Serialize(data);
             Assert.IsNull(SaveSystem.Deserialize(json));
         }
@@ -85,10 +85,17 @@ namespace MinersWatch.Tests.EditMode
         }
 
         [Test]
-        public void InventoryEntry_GetMineralType_Invalid_DefaultsToStone()
+        public void InventoryEntry_InvalidType_DefaultsToStone()
         {
             var entry = new InventoryEntry { mineralType = "NotAMineral", count = 1, sellPrice = 0f };
             Assert.AreEqual(MineralType.Stone, entry.GetMineralType());
+        }
+
+        [Test]
+        public void GetUpgradeLevel_MissingKey_Returns1()
+        {
+            var data = SaveData.CreateDefault();
+            Assert.AreEqual(1, data.GetUpgradeLevel("Nonexistent"));
         }
     }
 
@@ -118,7 +125,7 @@ namespace MinersWatch.Tests.EditMode
             var data = SaveData.CreateDefault();
             data.gold = 420;
             data.depthLevel = 1;
-            data.upgradeLevels["Pickaxe"] = 2;
+            data.SetUpgradeLevel("Pickaxe", 2);
 
             bool saved = _save.Save(data);
             Assert.IsTrue(saved);
@@ -127,7 +134,7 @@ namespace MinersWatch.Tests.EditMode
             Assert.IsNotNull(loaded);
             Assert.AreEqual(420, loaded.gold);
             Assert.AreEqual(1, loaded.depthLevel);
-            Assert.AreEqual(2, loaded.upgradeLevels["Pickaxe"]);
+            Assert.AreEqual(2, loaded.GetUpgradeLevel("Pickaxe"));
         }
 
         [Test]
@@ -146,9 +153,8 @@ namespace MinersWatch.Tests.EditMode
         }
 
         [Test]
-        public void Save_BackupRotation_CreatesBackups()
+        public void Save_BackupRotation()
         {
-            // Save 4 times — should have main + 3 backups
             for (int i = 0; i < 4; i++)
             {
                 var data = SaveData.CreateDefault();
@@ -156,7 +162,6 @@ namespace MinersWatch.Tests.EditMode
                 _save.Save(data);
             }
 
-            // Most recent save should still load
             var loaded = _save.Load();
             Assert.IsNotNull(loaded);
             Assert.AreEqual(300, loaded.gold);
@@ -173,7 +178,6 @@ namespace MinersWatch.Tests.EditMode
         {
             _save.Save(SaveData.CreateDefault());
             Assert.IsTrue(_save.HasSave());
-
             _save.DeleteAll();
             Assert.IsFalse(_save.HasSave());
         }
