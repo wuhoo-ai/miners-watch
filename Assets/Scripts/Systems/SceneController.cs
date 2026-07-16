@@ -46,6 +46,13 @@ namespace MinersWatch
         public void LoadTestGround()
         {
             if (SceneManager.GetSceneByName(_testGroundScene).isLoaded) return;
+#if UNITY_EDITOR
+            if (!Application.isPlaying)
+            {
+                Debug.Log("[SceneController] EditMode: skipping LoadTestGround (coroutines require PlayMode)");
+                return;
+            }
+#endif
             LoadScene(_testGroundScene);
         }
 

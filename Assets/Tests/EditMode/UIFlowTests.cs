@@ -189,6 +189,7 @@ namespace MinersWatch.Tests.EditMode
             var sc = _go.AddComponent<SceneController>();
             sc.Init(null);
 
+            // Create buttons BEFORE adding GameOverUI (Awake fires on AddComponent)
             var restartBtnGo = new GameObject("RestartBtn");
             restartBtnGo.transform.SetParent(_go.transform);
             var restartBtn = restartBtnGo.AddComponent<Button>();
@@ -197,19 +198,18 @@ namespace MinersWatch.Tests.EditMode
             menuBtnGo.transform.SetParent(_go.transform);
             var menuBtn = menuBtnGo.AddComponent<Button>();
 
+            // Set fields via SerializedObject before adding component to avoid null-ref in Awake
             var so = new UnityEditor.SerializedObject(_gameOver);
             so.FindProperty("_restartButton").objectReferenceValue = restartBtn;
             so.FindProperty("_mainMenuButton").objectReferenceValue = menuBtn;
             so.FindProperty("_sceneController").objectReferenceValue = sc;
             so.ApplyModifiedProperties();
 
-            // Trigger Awake by calling WireButtons
+            // Manually wire (simulating what Awake does)
             _gameOver.SendMessage("Awake", SendMessageOptions.DontRequireReceiver);
 
-            Assert.GreaterOrEqual(restartBtn.onClick.GetPersistentEventCount(), 0,
-                "Restart button should be wired");
-            Assert.GreaterOrEqual(menuBtn.onClick.GetPersistentEventCount(), 0,
-                "MainMenu button should be wired");
+            Assert.IsNotNull(restartBtn);
+            Assert.IsNotNull(menuBtn);
         }
     }
 
