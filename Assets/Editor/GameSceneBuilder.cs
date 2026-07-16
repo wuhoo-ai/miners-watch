@@ -16,7 +16,7 @@ namespace MinersWatch.Editor
             if (scene.name != "TestGround") return;
             if (GameObject.Find("GameCanvas") != null) return;
 
-            Debug.Log("[GameSceneBuilder] Building game UI...");
+            Debug.Log("[GameSceneBuilder] Building...");
             BuildUI();
             Debug.Log("[GameSceneBuilder] Done.");
         }
@@ -39,25 +39,30 @@ namespace MinersWatch.Editor
             canvasGo.AddComponent<CanvasScaler>().referenceResolution = new Vector2(1920, 1080);
             canvasGo.AddComponent<GraphicRaycaster>();
 
-            // === Back button — big, orange, center-top, impossible to miss ===
+            // === Back button — top-left, orange, runtime-wired ===
             var backBtn = NewChild("BackToMenuBtn", canvasGo.transform, layer);
             var br = backBtn.GetComponent<RectTransform>();
-            br.anchorMin = br.anchorMax = new Vector2(0.5f, 1f);
-            br.pivot = new Vector2(0.5f, 1f);
-            br.sizeDelta = new Vector2(260, 60);
-            br.anchoredPosition = new Vector2(0, -30);
-            backBtn.AddComponent<Image>().color = new Color(0.9f, 0.45f, 0.05f); // orange
+            br.anchorMin = br.anchorMax = br.pivot = new Vector2(0, 1); // top-left
+            br.sizeDelta = new Vector2(220, 64);
+            br.anchoredPosition = new Vector2(24, -24);
+            backBtn.AddComponent<Image>().color = new Color(0.9f, 0.45f, 0.05f);
             var bbtn = backBtn.AddComponent<Button>();
 
             var bl = NewChild("Label", backBtn.transform, layer);
             FullStretch(bl);
             var bt = bl.AddComponent<Text>();
-            bt.text = "← 返回菜单";
+            bt.text = "← 菜单";
             bt.fontSize = 26;
             bt.fontStyle = FontStyle.Bold;
             bt.color = Color.white;
             bt.alignment = TextAnchor.MiddleCenter;
             bt.font = GetFont();
+
+            // RUNTIME wiring (build-time FindObjectOfType fails because scenes are isolated)
+            bbtn.onClick.AddListener(() => {
+                var sc = Object.FindObjectOfType<SceneController>();
+                if (sc != null) sc.LoadMainMenu();
+            });
 
             // === GameOver overlay ===
             var overlay = NewChild("GameOverOverlay", canvasGo.transform, layer);
@@ -67,16 +72,16 @@ namespace MinersWatch.Editor
             var goText = NewChild("GameOverText", overlay.transform, layer);
             var grt = goText.GetComponent<RectTransform>();
             grt.anchorMin = grt.anchorMax = new Vector2(0.5f, 0.55f);
-            grt.sizeDelta = new Vector2(500, 80);
+            grt.sizeDelta = new Vector2(600, 100);
             var gt = goText.AddComponent<Text>();
             gt.text = "游戏结束";
-            gt.fontSize = 56;
+            gt.fontSize = 64;
             gt.color = new Color(0.9f, 0.2f, 0.2f);
             gt.alignment = TextAnchor.MiddleCenter;
             gt.font = GetFont();
 
-            var rb = MakeOverlayBtn("RestartBtn", "重新开始", new Vector2(0, -30), overlay.transform, layer);
-            var mb = MakeOverlayBtn("GOMainMenuBtn", "返回主菜单", new Vector2(0, -120), overlay.transform, layer);
+            var rb = MakeOverlayBtn("RestartBtn", "重新开始", new Vector2(0, -40), overlay.transform, layer);
+            var mb = MakeOverlayBtn("GOMainMenuBtn", "返回主菜单", new Vector2(0, -140), overlay.transform, layer);
 
             var ui = overlay.AddComponent<GameOverUI>();
             var so = new SerializedObject(ui);
@@ -84,25 +89,14 @@ namespace MinersWatch.Editor
             so.FindProperty("_victoryPanel").objectReferenceValue = overlay;
             so.FindProperty("_restartButton").objectReferenceValue = rb?.GetComponent<Button>();
             so.FindProperty("_mainMenuButton").objectReferenceValue = mb?.GetComponent<Button>();
-            var sc = Object.FindObjectOfType<SceneController>();
-            so.FindProperty("_sceneController").objectReferenceValue = sc;
             so.ApplyModifiedProperties();
-
-            // Wire back button
-            if (sc != null)
-                bbtn.onClick.AddListener(() => sc.LoadMainMenu());
-            else
-                Debug.LogWarning("[GameSceneBuilder] No SceneController found for back button");
 
             overlay.SetActive(false);
         }
 
-        static GameObject NewChild(string n, Transform p, int layer)
+        static GameObject NewChild(string n, Transform p, int l)
         {
-            var go = new GameObject(n, typeof(RectTransform));
-            go.layer = layer;
-            go.transform.SetParent(p, false);
-            return go;
+            var go = new GameObject(n, typeof(RectTransform)); go.layer = l; go.transform.SetParent(p, false); return go;
         }
 
         static GameObject MakeOverlayBtn(string name, string label, Vector2 pos, Transform parent, int layer)
@@ -110,7 +104,7 @@ namespace MinersWatch.Editor
             var go = NewChild(name, parent, layer);
             var rt = go.GetComponent<RectTransform>();
             rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.sizeDelta = new Vector2(280, 64);
+            rt.sizeDelta = new Vector2(340, 80);
             rt.anchoredPosition = pos;
             go.AddComponent<Image>().color = new Color(0.2f, 0.5f, 0.2f);
             go.AddComponent<Button>();
@@ -118,11 +112,8 @@ namespace MinersWatch.Editor
             var l = NewChild("Label", go.transform, layer);
             FullStretch(l);
             var t = l.AddComponent<Text>();
-            t.text = label;
-            t.fontSize = 26;
-            t.fontStyle = FontStyle.Bold;
-            t.color = Color.white;
-            t.alignment = TextAnchor.MiddleCenter;
+            t.text = label; t.fontSize = 30; t.fontStyle = FontStyle.Bold;
+            t.color = Color.white; t.alignment = TextAnchor.MiddleCenter;
             t.font = GetFont();
             return go;
         }
@@ -130,15 +121,10 @@ namespace MinersWatch.Editor
         static void FullStretch(GameObject go)
         {
             var rt = go.GetComponent<RectTransform>();
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.one;
-            rt.offsetMin = rt.offsetMax = Vector2.zero;
+            rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one; rt.offsetMin = rt.offsetMax = Vector2.zero;
         }
 
-        static Font GetFont()
-        {
-            return Font.CreateDynamicFontFromOSFont("Arial", 14)
-                ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        }
+        static Font GetFont() => Font.CreateDynamicFontFromOSFont("Arial", 14)
+            ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
     }
 }
