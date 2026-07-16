@@ -5,7 +5,7 @@ namespace MinersWatch
 {
     /// <summary>
     /// Main menu UI: New Game / Continue / Settings.
-    /// Minimal — delegates to scene loading (T010).
+    /// Auto-wires buttons from scene; delegates navigation to SceneController.
     /// </summary>
     public class MainMenuUI : MonoBehaviour
     {
@@ -16,10 +16,13 @@ namespace MinersWatch
 
         [Header("References")]
         [SerializeField] private SaveSystem _saveSystem;
+        [SerializeField] private SceneController _sceneController;
+        [SerializeField] private Canvas _mainCanvas;
 
-        public void Init(SaveSystem saveSystem)
+        public void Init(SaveSystem saveSystem, SceneController sceneController)
         {
             _saveSystem = saveSystem;
+            _sceneController = sceneController;
             WireButtons();
             RefreshButtons();
         }
@@ -27,7 +30,9 @@ namespace MinersWatch
         private void Awake()
         {
             if (_saveSystem == null)
-                _saveSystem = GetComponent<SaveSystem>() ?? GetComponentInParent<SaveSystem>();
+                _saveSystem = GetComponent<SaveSystem>() ?? FindObjectOfType<SaveSystem>();
+            if (_sceneController == null)
+                _sceneController = FindObjectOfType<SceneController>();
             WireButtons();
             RefreshButtons();
         }
@@ -41,24 +46,48 @@ namespace MinersWatch
 
         private void OnNewGame()
         {
-            // Scene loading handled by SceneController (T010)
-            Debug.Log("[MainMenu] New Game");
+            Debug.Log("[MainMenu] New Game → Loading TestGround");
+            if (_sceneController != null)
+            {
+                _sceneController.LoadTestGround();
+            }
+            else
+            {
+                // Fallback: direct scene load
+                UnityEngine.SceneManagement.SceneManager.LoadScene("TestGround", UnityEngine.SceneManagement.LoadSceneMode.Additive);
+            }
+            // Hide the menu canvas
+            if (_mainCanvas != null)
+                _mainCanvas.enabled = false;
         }
 
         private void OnContinue()
         {
-            Debug.Log("[MainMenu] Continue — load save");
+            Debug.Log("[MainMenu] Continue — load save and resume");
+            if (_saveSystem != null && _saveSystem.HasSave())
+            {
+                // TODO: Load save and resume game
+                OnNewGame(); // fallback for demo
+            }
         }
 
         private void OnSettings()
         {
-            Debug.Log("[MainMenu] Settings");
+            Debug.Log("[MainMenu] Settings — not implemented in demo");
         }
 
         public void RefreshButtons()
         {
             if (_continueButton != null)
                 _continueButton.interactable = _saveSystem != null && _saveSystem.HasSave();
+        }
+
+        /// <summary>Called when returning from game scene to re-show the menu.</summary>
+        public void Show()
+        {
+            if (_mainCanvas != null)
+                _mainCanvas.enabled = true;
+            RefreshButtons();
         }
     }
 }

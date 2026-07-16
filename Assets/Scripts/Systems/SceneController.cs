@@ -6,7 +6,7 @@ namespace MinersWatch
 {
     /// <summary>
     /// Scene controller: loads/unloads scenes, handles fade transitions.
-    /// Wraps SceneManager — minimal EditMode test surface (LoadSceneAsync needs runtime).
+    /// Used by MainMenuUI and GameOverUI for navigation.
     /// </summary>
     public class SceneController : MonoBehaviour
     {
@@ -16,6 +16,7 @@ namespace MinersWatch
         [SerializeField] private string _deepScene = "DeepCave";
         [SerializeField] private string _surfaceScene = "Surface";
         [SerializeField] private string _mainMenuScene = "MainMenu";
+        [SerializeField] private string _testGroundScene = "TestGround";
 
         [Header("Transition")]
         [SerializeField] private float _fadeDuration = 2f;
@@ -27,6 +28,7 @@ namespace MinersWatch
         private string _currentScene;
 
         public string CurrentScene => _currentScene;
+        public bool IsOnMainMenu => string.IsNullOrEmpty(_currentScene) || _currentScene == _mainMenuScene;
 
         public void Init(DepthProgression progression)
         {
@@ -38,6 +40,13 @@ namespace MinersWatch
         {
             if (_progression == null)
                 _progression = GetComponent<DepthProgression>() ?? GetComponentInParent<DepthProgression>();
+        }
+
+        /// <summary>Load the TestGround scene for demo gameplay.</summary>
+        public void LoadTestGround()
+        {
+            if (SceneManager.GetSceneByName(_testGroundScene).isLoaded) return;
+            LoadScene(_testGroundScene);
         }
 
         /// <summary>Load the cave scene for a depth level.</summary>
@@ -56,8 +65,19 @@ namespace MinersWatch
         /// <summary>Load the surface (shop/build/defense) scene.</summary>
         public void LoadSurface() => LoadScene(_surfaceScene);
 
-        /// <summary>Load the main menu.</summary>
-        public void LoadMainMenu() => LoadScene(_mainMenuScene);
+        /// <summary>Return to main menu. Unloads current scene, shows menu UI.</summary>
+        public void LoadMainMenu()
+        {
+            // If we're on the game scene, just unload it (MainMenu is the base scene)
+            if (!string.IsNullOrEmpty(_currentScene) && _currentScene != _mainMenuScene)
+            {
+                StartCoroutine(UnloadAndShowMenu());
+                return;
+            }
+            // If we're already on MainMenu, just show it
+            var menuUI = FindObjectOfType<MainMenuUI>();
+            if (menuUI != null) menuUI.Show();
+        }
 
         /// <summary>Get scene name for a depth level (testable).</summary>
         public string GetSceneNameForDepth(DepthLevel depth) => depth switch
@@ -113,6 +133,42 @@ namespace MinersWatch
                 if (sceneName == _shallowScene) _progression.SetDepth(DepthLevel.Shallow);
                 else if (sceneName == _midScene) _progression.SetDepth(DepthLevel.Medium);
                 else if (sceneName == _deepScene) _progression.SetDepth(DepthLevel.Deep);
+            }
+        }
+
+        private IEnumerator UnloadAndShowMenu()
+        {
+            // Fade out
+            if (_fadeCanvas != null)
+            {
+                float t = 0f;
+                while (t < _fadeDuration)
+                {
+                    t += Time.deltaTime;
+                    _fadeCanvas.alpha = Mathf.Clamp01(t / _fadeDuration);
+                    yield return null;
+                }
+            }
+
+            // Unload current scene
+            if (!string.IsNullOrEmpty(_currentScene))
+                yield return SceneManager.UnloadSceneAsync(_currentScene);
+            _currentScene = null;
+
+            // Show main menu UI
+            var menuUI = FindObjectOfType<MainMenuUI>();
+            if (menuUI != null) menuUI.Show();
+
+            // Fade in
+            if (_fadeCanvas != null)
+            {
+                float t = _fadeDuration;
+                while (t > 0f)
+                {
+                    t -= Time.deltaTime;
+                    _fadeCanvas.alpha = Mathf.Clamp01(t / _fadeDuration);
+                    yield return null;
+                }
             }
         }
     }
