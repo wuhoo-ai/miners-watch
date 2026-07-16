@@ -27,9 +27,9 @@ namespace MinersWatch.Editor
 
             if (Object.FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
             {
-                new GameObject("EventSystem")
-                    .AddComponent<UnityEngine.EventSystems.EventSystem>()
-                    .gameObject.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+                var es = new GameObject("EventSystem");
+                es.AddComponent<UnityEngine.EventSystems.EventSystem>();
+                es.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
             }
 
             // Canvas
@@ -39,24 +39,27 @@ namespace MinersWatch.Editor
             canvasGo.AddComponent<CanvasScaler>().referenceResolution = new Vector2(1920, 1080);
             canvasGo.AddComponent<GraphicRaycaster>();
 
-            // Back button
-            var bb = NewChild("BackToMenuBtn", canvasGo.transform, layer);
-            var br = bb.GetComponent<RectTransform>();
-            br.anchorMin = br.anchorMax = br.pivot = new Vector2(1, 1);
-            br.sizeDelta = new Vector2(140, 44);
-            br.anchoredPosition = new Vector2(-20, -20);
-            bb.AddComponent<Image>().color = new Color(0, 0, 0, 0.7f);
-            var bbtn = bb.AddComponent<Button>();
-            var bl = NewChild("Label", bb.transform, layer);
+            // === Back button — big, orange, center-top, impossible to miss ===
+            var backBtn = NewChild("BackToMenuBtn", canvasGo.transform, layer);
+            var br = backBtn.GetComponent<RectTransform>();
+            br.anchorMin = br.anchorMax = new Vector2(0.5f, 1f);
+            br.pivot = new Vector2(0.5f, 1f);
+            br.sizeDelta = new Vector2(260, 60);
+            br.anchoredPosition = new Vector2(0, -30);
+            backBtn.AddComponent<Image>().color = new Color(0.9f, 0.45f, 0.05f); // orange
+            var bbtn = backBtn.AddComponent<Button>();
+
+            var bl = NewChild("Label", backBtn.transform, layer);
             FullStretch(bl);
             var bt = bl.AddComponent<Text>();
-            bt.text = "← 菜单";
-            bt.fontSize = 20;
+            bt.text = "← 返回菜单";
+            bt.fontSize = 26;
+            bt.fontStyle = FontStyle.Bold;
             bt.color = Color.white;
             bt.alignment = TextAnchor.MiddleCenter;
             bt.font = GetFont();
 
-            // GameOver overlay
+            // === GameOver overlay ===
             var overlay = NewChild("GameOverOverlay", canvasGo.transform, layer);
             FullStretch(overlay);
             overlay.AddComponent<Image>().color = new Color(0, 0, 0, 0.9f);
@@ -72,11 +75,9 @@ namespace MinersWatch.Editor
             gt.alignment = TextAnchor.MiddleCenter;
             gt.font = GetFont();
 
-            // Buttons in overlay
             var rb = MakeOverlayBtn("RestartBtn", "重新开始", new Vector2(0, -30), overlay.transform, layer);
             var mb = MakeOverlayBtn("GOMainMenuBtn", "返回主菜单", new Vector2(0, -120), overlay.transform, layer);
 
-            // Wire GameOverUI
             var ui = overlay.AddComponent<GameOverUI>();
             var so = new SerializedObject(ui);
             so.FindProperty("_gameOverPanel").objectReferenceValue = overlay;
@@ -86,7 +87,12 @@ namespace MinersWatch.Editor
             var sc = Object.FindObjectOfType<SceneController>();
             so.FindProperty("_sceneController").objectReferenceValue = sc;
             so.ApplyModifiedProperties();
-            if (sc != null) bbtn.onClick.AddListener(() => sc.LoadMainMenu());
+
+            // Wire back button
+            if (sc != null)
+                bbtn.onClick.AddListener(() => sc.LoadMainMenu());
+            else
+                Debug.LogWarning("[GameSceneBuilder] No SceneController found for back button");
 
             overlay.SetActive(false);
         }

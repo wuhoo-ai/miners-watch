@@ -41,10 +41,10 @@ namespace MinersWatch.Editor
             canvasGo.AddComponent<CanvasScaler>().referenceResolution = new Vector2(1920, 1080);
             canvasGo.AddComponent<GraphicRaycaster>();
 
-            // FULLSCREEN RED background — impossible to miss if canvas works
+            // Dark background (was red debug — confirmed canvas works)
             var bg = NewChild("BgPanel", canvasGo.transform, layer);
             var bgImg = bg.AddComponent<Image>();
-            bgImg.color = new Color(0.6f, 0.1f, 0.1f, 1f); // RED — debug
+            bgImg.color = new Color(0.06f, 0.06f, 0.10f, 1f);
             FullStretch(bg);
 
             // Title
