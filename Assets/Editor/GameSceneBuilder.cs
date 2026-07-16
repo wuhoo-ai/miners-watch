@@ -178,8 +178,11 @@ namespace MinersWatch.Editor
 
         private static Font GetFont()
         {
-            return Resources.GetBuiltinResource<Font>("Arial.ttf")
-                ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            Font f = Font.CreateDynamicFontFromOSFont("Arial", 14);
+            if (f != null) return f;
+            f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (f != null) return f;
+            return null;
         }
     }
 }

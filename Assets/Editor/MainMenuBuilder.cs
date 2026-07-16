@@ -80,25 +80,19 @@ namespace MinersWatch.Editor
             subRt.sizeDelta = new Vector2(400, 50);
             subRt.anchoredPosition = Vector2.zero;
 
-            // 6. Button container
-            var btnContainer = CreateUIElement("ButtonContainer", canvasGo.transform);
-            var bcRt = btnContainer.GetComponent<RectTransform>();
-            bcRt.anchorMin = new Vector2(0.5f, 0.5f);
-            bcRt.anchorMax = new Vector2(0.5f, 0.5f);
-            bcRt.sizeDelta = new Vector2(300, 250);
-            bcRt.anchoredPosition = new Vector2(0, -40);
-            var vlg = btnContainer.AddComponent<VerticalLayoutGroup>();
-            vlg.spacing = 16;
-            vlg.childAlignment = TextAnchor.MiddleCenter;
-            vlg.childControlWidth = true;
-            vlg.childControlHeight = false;
-            vlg.childForceExpandWidth = true;
-            vlg.childForceExpandHeight = false;
+            // 6. Button container (removed VLG — manual positioning is more reliable in batch mode)
+            // btnContainer kept but unused; buttons are placed directly on canvas
 
-            // 7. Buttons
-            CreateMenuButton("NewGameBtn", "新游戏", btnContainer.transform, new Color(0.2f, 0.6f, 0.2f));
-            CreateMenuButton("ContinueBtn", "继续游戏", btnContainer.transform, new Color(0.15f, 0.15f, 0.15f));
-            CreateMenuButton("SettingsBtn", "设置", btnContainer.transform, new Color(0.15f, 0.15f, 0.15f));
+            // 7. Buttons (manual positioning, no VLG to avoid batch-mode layout issues)
+            float btnY = -40;
+            CreateMenuButton("NewGameBtn", "新游戏", canvasGo.transform, new Vector2(0, btnY),
+                new Color(0.15f, 0.55f, 0.15f), Color.white);
+            btnY -= 76;
+            CreateMenuButton("ContinueBtn", "继续游戏", canvasGo.transform, new Vector2(0, btnY),
+                new Color(0.25f, 0.25f, 0.30f), new Color(0.5f, 0.5f, 0.5f));
+            btnY -= 76;
+            CreateMenuButton("SettingsBtn", "设置", canvasGo.transform, new Vector2(0, btnY),
+                new Color(0.25f, 0.25f, 0.30f), new Color(0.5f, 0.5f, 0.5f));
 
             // 8. Version text
             var ver = CreateUIElement("Version", canvasGo.transform);
@@ -151,11 +145,14 @@ namespace MinersWatch.Editor
             rt.offsetMax = Vector2.zero;
         }
 
-        private static void CreateMenuButton(string name, string label, Transform parent, Color bgColor)
+        private static void CreateMenuButton(string name, string label, Transform parent, Vector2 anchoredPos, Color bgColor, Color textColor)
         {
             var go = CreateUIElement(name, parent);
             var rt = go.GetComponent<RectTransform>();
+            rt.anchorMin = new Vector2(0.5f, 0.5f);
+            rt.anchorMax = new Vector2(0.5f, 0.5f);
             rt.sizeDelta = new Vector2(260, 60);
+            rt.anchoredPosition = anchoredPos;
 
             var img = go.AddComponent<Image>();
             img.color = bgColor;
@@ -163,8 +160,9 @@ namespace MinersWatch.Editor
             var btn = go.AddComponent<Button>();
             var colors = btn.colors;
             colors.normalColor = bgColor;
-            colors.highlightedColor = bgColor * 1.3f;
-            colors.pressedColor = bgColor * 0.8f;
+            colors.highlightedColor = bgColor * 1.4f;
+            colors.pressedColor = bgColor * 0.7f;
+            colors.disabledColor = bgColor * 0.5f;
             btn.colors = colors;
 
             // Label
@@ -173,16 +171,21 @@ namespace MinersWatch.Editor
             labelText.text = label;
             labelText.font = GetFont();
             labelText.fontSize = 28;
-            labelText.color = Color.white;
+            labelText.fontStyle = FontStyle.Bold;
+            labelText.color = textColor;
             labelText.alignment = TextAnchor.MiddleCenter;
             StretchRect(labelGo);
         }
 
         private static Font GetFont()
         {
-            // Use built-in Arial or fallback to system font
-            return Resources.GetBuiltinResource<Font>("Arial.ttf")
-                ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            // Unity 6 compatible: try OS font, fallback to built-in, then null (uses default)
+            Font f = Font.CreateDynamicFontFromOSFont("Arial", 14);
+            if (f != null) return f;
+            f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (f != null) return f;
+            // Return null — Text component will use its own default
+            return null;
         }
     }
 }
