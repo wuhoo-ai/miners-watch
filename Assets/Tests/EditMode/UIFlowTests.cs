@@ -184,32 +184,17 @@ namespace MinersWatch.Tests.EditMode
         }
 
         [Test]
-        public void WiresButtons_OnAwake()
+        public void TriggerGameOver_ShowsPanel()
         {
-            var sc = _go.AddComponent<SceneController>();
-            sc.Init(null);
+            var panel = new GameObject("Panel");
+            panel.SetActive(false);
 
-            // Create buttons BEFORE adding GameOverUI (Awake fires on AddComponent)
-            var restartBtnGo = new GameObject("RestartBtn");
-            restartBtnGo.transform.SetParent(_go.transform);
-            var restartBtn = restartBtnGo.AddComponent<Button>();
-
-            var menuBtnGo = new GameObject("MainMenuBtn");
-            menuBtnGo.transform.SetParent(_go.transform);
-            var menuBtn = menuBtnGo.AddComponent<Button>();
-
-            // Set fields via SerializedObject before adding component to avoid null-ref in Awake
             var so = new UnityEditor.SerializedObject(_gameOver);
-            so.FindProperty("_restartButton").objectReferenceValue = restartBtn;
-            so.FindProperty("_mainMenuButton").objectReferenceValue = menuBtn;
-            so.FindProperty("_sceneController").objectReferenceValue = sc;
+            so.FindProperty("_gameOverPanel").objectReferenceValue = panel;
             so.ApplyModifiedProperties();
 
-            // Manually wire (simulating what Awake does)
-            _gameOver.SendMessage("Awake", SendMessageOptions.DontRequireReceiver);
-
-            Assert.IsNotNull(restartBtn);
-            Assert.IsNotNull(menuBtn);
+            _gameOver.TriggerGameOver();
+            Assert.IsTrue(panel.activeSelf);
         }
     }
 
