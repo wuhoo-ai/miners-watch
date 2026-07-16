@@ -15,9 +15,7 @@ namespace MinersWatch.Editor
         {
             if (scene.name != "TestGround") return;
             if (GameObject.Find("GameCanvas") != null) return;
-            Debug.Log("[GameSceneBuilder] Building...");
             BuildUI();
-            Debug.Log("[GameSceneBuilder] Done.");
         }
 
         static void BuildUI()
@@ -34,7 +32,7 @@ namespace MinersWatch.Editor
             go.AddComponent<CanvasScaler>().referenceResolution = new Vector2(1920, 1080);
             go.AddComponent<GraphicRaycaster>();
 
-            // === Back button: top-left, orange, 400x120, direct scene unload ===
+            // Back button: top-left, orange, 400x120, direct scene unload
             var bb = C("BackToMenuBtn", go.transform, L);
             var br = bb.GetComponent<RectTransform>();
             br.anchorMin = br.anchorMax = br.pivot = new Vector2(0, 1);
@@ -48,14 +46,14 @@ namespace MinersWatch.Editor
             bt.text = "← 菜单"; bt.fontSize = 52; bt.fontStyle = FontStyle.Bold;
             bt.color = Color.white; bt.alignment = TextAnchor.MiddleCenter; bt.font = GF();
 
-            // Direct unload TestGround + show MainMenu canvas — no SceneController dependency
+            // Direct unload TestGround + show MainMenu canvas
             bbtn.onClick.AddListener(() => {
                 SceneManager.UnloadSceneAsync("TestGround");
                 var mc = GameObject.Find("MainCanvas");
                 if (mc != null) mc.GetComponent<Canvas>().enabled = true;
             });
 
-            // === GameOver overlay ===
+            // GameOver overlay
             var ov = C("GameOverOverlay", go.transform, L); FS(ov);
             ov.AddComponent<Image>().color = new Color(0, 0, 0, 0.9f);
 
@@ -63,7 +61,7 @@ namespace MinersWatch.Editor
             var gr = gt.GetComponent<RectTransform>();
             gr.anchorMin = gr.anchorMax = new Vector2(0.5f, 0.55f); gr.sizeDelta = new Vector2(800, 160);
             var gtt = gt.AddComponent<Text>();
-            gtt.text = "游戏结束"; gtt.fontSize = 112; gtt.color = new Color(0.9f,0.2f,0.2f);
+            gtt.text = "游戏结束"; gtt.fontSize = 112; gtt.color = new Color(0.9f, 0.2f, 0.2f);
             gtt.alignment = TextAnchor.MiddleCenter; gtt.font = GF();
 
             var rb = MB("RestartBtn", "重新开始", new Vector2(0, -60), ov.transform, L);
@@ -80,16 +78,18 @@ namespace MinersWatch.Editor
             ov.SetActive(false);
         }
 
-        static GameObject C(string n, Transform p, int l) { var g=new GameObject(n,typeof(RectTransform));g.layer=l;g.transform.SetParent(p,false);return g; }
-        static GameObject MB(string n, string lb, Vector2 pos, Transform p, int L) {
-            var g=C(n,p,L); var r=g.GetComponent<RectTransform>();
-            r.anchorMin=r.anchorMax=new Vector2(0.5f,0.5f); r.sizeDelta=new Vector2(680,160); r.anchoredPosition=pos;
-            g.AddComponent<Image>().color=new Color(0.2f,0.5f,0.2f); g.AddComponent<Button>();
-            var l=C("L",g.transform,L); FS(l);
-            var t=l.AddComponent<Text>(); t.text=lb; t.fontSize=56; t.fontStyle=FontStyle.Bold;
-            t.color=Color.white; t.alignment=TextAnchor.MiddleCenter; t.font=GF();
-            return g; }
-        static void FS(GameObject g) { var r=g.GetComponent<RectTransform>(); r.anchorMin=Vector2.zero; r.anchorMax=Vector2.one; r.offsetMin=r.offsetMax=Vector2.zero; }
-        static Font GF() => Font.CreateDynamicFontFromOSFont("Arial",14) ?? Resources.GetBuiltinResource<Font>(\"LegacyRuntime.ttf\");
+        static GameObject C(string n, Transform p, int l) { var g = new GameObject(n, typeof(RectTransform)); g.layer = l; g.transform.SetParent(p, false); return g; }
+        static GameObject MB(string n, string lb, Vector2 pos, Transform p, int L)
+        {
+            var g = C(n, p, L); var r = g.GetComponent<RectTransform>();
+            r.anchorMin = r.anchorMax = new Vector2(0.5f, 0.5f); r.sizeDelta = new Vector2(680, 160); r.anchoredPosition = pos;
+            g.AddComponent<Image>().color = new Color(0.2f, 0.5f, 0.2f); g.AddComponent<Button>();
+            var l = C("L", g.transform, L); FS(l);
+            var t = l.AddComponent<Text>(); t.text = lb; t.fontSize = 56; t.fontStyle = FontStyle.Bold;
+            t.color = Color.white; t.alignment = TextAnchor.MiddleCenter; t.font = GF();
+            return g;
+        }
+        static void FS(GameObject g) { var r = g.GetComponent<RectTransform>(); r.anchorMin = Vector2.zero; r.anchorMax = Vector2.one; r.offsetMin = r.offsetMax = Vector2.zero; }
+        static Font GF() => Font.CreateDynamicFontFromOSFont("Arial", 14) ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
     }
 }
