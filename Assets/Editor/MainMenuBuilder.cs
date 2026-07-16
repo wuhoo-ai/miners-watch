@@ -24,7 +24,7 @@ namespace MinersWatch.Editor
             if (!mainMenuScene.isLoaded)
             {
                 // Need to load it to modify
-                mainMenuScene = SceneManager.OpenScene("Assets/Scenes/MainMenu.unity", OpenSceneMode.Additive);
+                mainMenuScene = EditorSceneManager.OpenScene("Assets/Scenes/MainMenu.unity", OpenSceneMode.Additive);
             }
             if (!mainMenuScene.IsValid() || GameObject.Find("MainCanvas") != null) return;
 
