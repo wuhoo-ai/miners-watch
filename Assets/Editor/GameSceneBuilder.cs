@@ -15,7 +15,6 @@ namespace MinersWatch.Editor
         {
             if (scene.name != "TestGround") return;
             if (GameObject.Find("GameCanvas") != null) return;
-
             Debug.Log("[GameSceneBuilder] Building...");
             BuildUI();
             Debug.Log("[GameSceneBuilder] Done.");
@@ -23,108 +22,74 @@ namespace MinersWatch.Editor
 
         static void BuildUI()
         {
-            int layer = 5;
+            int L = 5;
 
             if (Object.FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
-            {
-                var es = new GameObject("EventSystem");
-                es.AddComponent<UnityEngine.EventSystems.EventSystem>();
-                es.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
-            }
+                new GameObject("EventSystem").AddComponent<UnityEngine.EventSystems.EventSystem>()
+                    .gameObject.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
 
-            // Canvas
-            var canvasGo = new GameObject("GameCanvas", typeof(RectTransform));
-            canvasGo.layer = layer;
-            canvasGo.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
-            canvasGo.AddComponent<CanvasScaler>().referenceResolution = new Vector2(1920, 1080);
-            canvasGo.AddComponent<GraphicRaycaster>();
+            var go = new GameObject("GameCanvas", typeof(RectTransform));
+            go.layer = L;
+            go.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+            go.AddComponent<CanvasScaler>().referenceResolution = new Vector2(1920, 1080);
+            go.AddComponent<GraphicRaycaster>();
 
-            // === Back button — top-left, orange, runtime-wired ===
-            var backBtn = NewChild("BackToMenuBtn", canvasGo.transform, layer);
-            var br = backBtn.GetComponent<RectTransform>();
-            br.anchorMin = br.anchorMax = br.pivot = new Vector2(0, 1); // top-left
-            br.sizeDelta = new Vector2(220, 64);
-            br.anchoredPosition = new Vector2(24, -24);
-            backBtn.AddComponent<Image>().color = new Color(0.9f, 0.45f, 0.05f);
-            var bbtn = backBtn.AddComponent<Button>();
+            // === Back button: top-left, orange, 400x120, direct scene unload ===
+            var bb = C("BackToMenuBtn", go.transform, L);
+            var br = bb.GetComponent<RectTransform>();
+            br.anchorMin = br.anchorMax = br.pivot = new Vector2(0, 1);
+            br.sizeDelta = new Vector2(400, 120);
+            br.anchoredPosition = new Vector2(30, -30);
+            bb.AddComponent<Image>().color = new Color(0.9f, 0.45f, 0.05f);
+            var bbtn = bb.AddComponent<Button>();
 
-            var bl = NewChild("Label", backBtn.transform, layer);
-            FullStretch(bl);
+            var bl = C("L", bb.transform, L); FS(bl);
             var bt = bl.AddComponent<Text>();
-            bt.text = "← 菜单";
-            bt.fontSize = 26;
-            bt.fontStyle = FontStyle.Bold;
-            bt.color = Color.white;
-            bt.alignment = TextAnchor.MiddleCenter;
-            bt.font = GetFont();
+            bt.text = "← 菜单"; bt.fontSize = 52; bt.fontStyle = FontStyle.Bold;
+            bt.color = Color.white; bt.alignment = TextAnchor.MiddleCenter; bt.font = GF();
 
-            // RUNTIME wiring (build-time FindObjectOfType fails because scenes are isolated)
+            // Direct unload TestGround + show MainMenu canvas — no SceneController dependency
             bbtn.onClick.AddListener(() => {
-                var sc = Object.FindObjectOfType<SceneController>();
-                if (sc != null) sc.LoadMainMenu();
+                SceneManager.UnloadSceneAsync("TestGround");
+                var mc = GameObject.Find("MainCanvas");
+                if (mc != null) mc.GetComponent<Canvas>().enabled = true;
             });
 
             // === GameOver overlay ===
-            var overlay = NewChild("GameOverOverlay", canvasGo.transform, layer);
-            FullStretch(overlay);
-            overlay.AddComponent<Image>().color = new Color(0, 0, 0, 0.9f);
+            var ov = C("GameOverOverlay", go.transform, L); FS(ov);
+            ov.AddComponent<Image>().color = new Color(0, 0, 0, 0.9f);
 
-            var goText = NewChild("GameOverText", overlay.transform, layer);
-            var grt = goText.GetComponent<RectTransform>();
-            grt.anchorMin = grt.anchorMax = new Vector2(0.5f, 0.55f);
-            grt.sizeDelta = new Vector2(600, 100);
-            var gt = goText.AddComponent<Text>();
-            gt.text = "游戏结束";
-            gt.fontSize = 64;
-            gt.color = new Color(0.9f, 0.2f, 0.2f);
-            gt.alignment = TextAnchor.MiddleCenter;
-            gt.font = GetFont();
+            var gt = C("GameOverText", ov.transform, L);
+            var gr = gt.GetComponent<RectTransform>();
+            gr.anchorMin = gr.anchorMax = new Vector2(0.5f, 0.55f); gr.sizeDelta = new Vector2(800, 160);
+            var gtt = gt.AddComponent<Text>();
+            gtt.text = "游戏结束"; gtt.fontSize = 112; gtt.color = new Color(0.9f,0.2f,0.2f);
+            gtt.alignment = TextAnchor.MiddleCenter; gtt.font = GF();
 
-            var rb = MakeOverlayBtn("RestartBtn", "重新开始", new Vector2(0, -40), overlay.transform, layer);
-            var mb = MakeOverlayBtn("GOMainMenuBtn", "返回主菜单", new Vector2(0, -140), overlay.transform, layer);
+            var rb = MB("RestartBtn", "重新开始", new Vector2(0, -60), ov.transform, L);
+            var mb = MB("GOMainMenuBtn", "返回主菜单", new Vector2(0, -220), ov.transform, L);
 
-            var ui = overlay.AddComponent<GameOverUI>();
+            var ui = ov.AddComponent<GameOverUI>();
             var so = new SerializedObject(ui);
-            so.FindProperty("_gameOverPanel").objectReferenceValue = overlay;
-            so.FindProperty("_victoryPanel").objectReferenceValue = overlay;
+            so.FindProperty("_gameOverPanel").objectReferenceValue = ov;
+            so.FindProperty("_victoryPanel").objectReferenceValue = ov;
             so.FindProperty("_restartButton").objectReferenceValue = rb?.GetComponent<Button>();
             so.FindProperty("_mainMenuButton").objectReferenceValue = mb?.GetComponent<Button>();
             so.ApplyModifiedProperties();
 
-            overlay.SetActive(false);
+            ov.SetActive(false);
         }
 
-        static GameObject NewChild(string n, Transform p, int l)
-        {
-            var go = new GameObject(n, typeof(RectTransform)); go.layer = l; go.transform.SetParent(p, false); return go;
-        }
-
-        static GameObject MakeOverlayBtn(string name, string label, Vector2 pos, Transform parent, int layer)
-        {
-            var go = NewChild(name, parent, layer);
-            var rt = go.GetComponent<RectTransform>();
-            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.sizeDelta = new Vector2(340, 80);
-            rt.anchoredPosition = pos;
-            go.AddComponent<Image>().color = new Color(0.2f, 0.5f, 0.2f);
-            go.AddComponent<Button>();
-
-            var l = NewChild("Label", go.transform, layer);
-            FullStretch(l);
-            var t = l.AddComponent<Text>();
-            t.text = label; t.fontSize = 30; t.fontStyle = FontStyle.Bold;
-            t.color = Color.white; t.alignment = TextAnchor.MiddleCenter;
-            t.font = GetFont();
-            return go;
-        }
-
-        static void FullStretch(GameObject go)
-        {
-            var rt = go.GetComponent<RectTransform>();
-            rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one; rt.offsetMin = rt.offsetMax = Vector2.zero;
-        }
-
-        static Font GetFont() => Font.CreateDynamicFontFromOSFont("Arial", 14)
-            ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        static GameObject C(string n, Transform p, int l) { var g=new GameObject(n,typeof(RectTransform));g.layer=l;g.transform.SetParent(p,false);return g; }
+        static GameObject MB(string n, string lb, Vector2 pos, Transform p, int L) {
+            var g=C(n,p,L); var r=g.GetComponent<RectTransform>();
+            r.anchorMin=r.anchorMax=new Vector2(0.5f,0.5f); r.sizeDelta=new Vector2(680,160); r.anchoredPosition=pos;
+            g.AddComponent<Image>().color=new Color(0.2f,0.5f,0.2f); g.AddComponent<Button>();
+            var l=C("L",g.transform,L); FS(l);
+            var t=l.AddComponent<Text>(); t.text=lb; t.fontSize=56; t.fontStyle=FontStyle.Bold;
+            t.color=Color.white; t.alignment=TextAnchor.MiddleCenter; t.font=GF();
+            return g; }
+        static void FS(GameObject g) { var r=g.GetComponent<RectTransform>(); r.anchorMin=Vector2.zero; r.anchorMax=Vector2.one; r.offsetMin=r.offsetMax=Vector2.zero; }
+        static Font GF() => Font.CreateDynamicFontFromOSFont("Arial",14) ?? Resources.GetBuiltinResource<Font>(\"LegacyRuntime.ttf\");
     }
 }
