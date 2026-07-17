@@ -40,18 +40,12 @@ namespace MinersWatch.Editor
             br.anchoredPosition = new Vector2(30, -30);
             bb.AddComponent<Image>().color = new Color(0.9f, 0.45f, 0.05f);
             var bbtn = bb.AddComponent<Button>();
+            bb.AddComponent<BackToMenu>(); // Runtime wiring — lambdas are not serializable
 
             var bl = C("L", bb.transform, L); FS(bl);
             var bt = bl.AddComponent<Text>();
             bt.text = "← 菜单"; bt.fontSize = 52; bt.fontStyle = FontStyle.Bold;
             bt.color = Color.white; bt.alignment = TextAnchor.MiddleCenter; bt.font = GF();
-
-            // Direct unload TestGround + show MainMenu canvas
-            bbtn.onClick.AddListener(() => {
-                SceneManager.UnloadSceneAsync("TestGround");
-                var mc = GameObject.Find("MainCanvas");
-                if (mc != null) mc.GetComponent<Canvas>().enabled = true;
-            });
 
             // GameOver overlay
             var ov = C("GameOverOverlay", go.transform, L); FS(ov);
