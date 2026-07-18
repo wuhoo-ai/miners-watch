@@ -29,7 +29,7 @@ namespace MinersWatch
         private void Awake()
         {
             if (_inventory == null)
-                _inventory = GetComponent<InventorySystem>() ?? GetComponentInParent<InventorySystem>();
+                _inventory = GetComponent<InventorySystem>() ?? GetComponentInParent<InventorySystem>() ?? GameRoot.Get<InventorySystem>();
 
             if (_inventory != null)
             {

@@ -29,7 +29,7 @@ namespace MinersWatch
         private void Awake()
         {
             if (_upgrades == null)
-                _upgrades = GetComponent<UpgradeSystem>() ?? GetComponentInParent<UpgradeSystem>();
+                _upgrades = GetComponent<UpgradeSystem>() ?? GetComponentInParent<UpgradeSystem>() ?? GameRoot.Get<UpgradeSystem>();
             RecalculateMaxHP();
             _currentHP = _maxHP;
         }

@@ -32,7 +32,7 @@ namespace MinersWatch
 
         private void Awake()
         {
-            if (_shop == null) _shop = GetComponent<ShopSystem>() ?? GetComponentInParent<ShopSystem>();
+            if (_shop == null) _shop = GetComponent<ShopSystem>() ?? GetComponentInParent<ShopSystem>() ?? GameRoot.Get<ShopSystem>();
             _grid = new bool[_gridWidth];
         }
 

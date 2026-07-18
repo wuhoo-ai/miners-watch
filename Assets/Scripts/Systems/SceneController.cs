@@ -29,6 +29,7 @@ namespace MinersWatch
 
         public string CurrentScene => _currentScene;
         public bool IsOnMainMenu => string.IsNullOrEmpty(_currentScene) || _currentScene == _mainMenuScene;
+        public bool IsInCave => _currentScene == _shallowScene || _currentScene == _midScene || _currentScene == _deepScene;
 
         public void Init(DepthProgression progression)
         {

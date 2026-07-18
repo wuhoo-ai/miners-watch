@@ -46,15 +46,16 @@ namespace MinersWatch
 
         private void OnNewGame()
         {
-            Debug.Log("[MainMenu] New Game → Loading TestGround");
-            if (_sceneController != null)
+            Debug.Log("[MainMenu] New Game → Loading Surface");
+            var sc = _sceneController != null ? _sceneController : GameRoot.Get<SceneController>();
+            if (sc != null)
             {
-                _sceneController.LoadTestGround();
+                sc.LoadSurface();
             }
             else
             {
                 // Fallback: direct scene load
-                UnityEngine.SceneManagement.SceneManager.LoadScene("TestGround", UnityEngine.SceneManagement.LoadSceneMode.Additive);
+                UnityEngine.SceneManagement.SceneManager.LoadScene("Surface", UnityEngine.SceneManagement.LoadSceneMode.Additive);
             }
             // Hide the menu canvas
             if (_mainCanvas != null)

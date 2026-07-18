@@ -23,11 +23,11 @@ namespace MinersWatch
         {
             Debug.Log("[BackToMenu] Returning to MainMenu");
 
-            // Unload the game scene (additively loaded on top of MainMenu)
-            var tgScene = SceneManager.GetSceneByName("TestGround");
-            if (tgScene.isLoaded)
+            // Unload whichever game scene this button lives in (additively loaded on top of MainMenu)
+            var ownScene = gameObject.scene;
+            if (ownScene.isLoaded && ownScene.name != "MainMenu")
             {
-                SceneManager.UnloadSceneAsync("TestGround");
+                SceneManager.UnloadSceneAsync(ownScene.name);
             }
 
             // Show the MainCanvas that was hidden when entering the game

@@ -35,7 +35,7 @@ namespace MinersWatch
         private void Awake()
         {
             if (_shop == null)
-                _shop = GetComponent<ShopSystem>() ?? GetComponentInParent<ShopSystem>();
+                _shop = GetComponent<ShopSystem>() ?? GetComponentInParent<ShopSystem>() ?? GameRoot.Get<ShopSystem>();
 
             if (_shop?.Upgrades != null)
                 _shop.Upgrades.OnGoldChanged += _ => RefreshDisplay();

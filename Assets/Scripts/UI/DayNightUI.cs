@@ -29,7 +29,7 @@ namespace MinersWatch
         private void Awake()
         {
             if (_cycle == null)
-                _cycle = GetComponent<DayNightCycle>() ?? GetComponentInParent<DayNightCycle>();
+                _cycle = GetComponent<DayNightCycle>() ?? GetComponentInParent<DayNightCycle>() ?? GameRoot.Get<DayNightCycle>();
 
             if (_cycle != null)
             {

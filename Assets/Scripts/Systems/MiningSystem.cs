@@ -26,6 +26,8 @@ namespace MinersWatch
             lastMineTime = -999f;
             if (mineCooldown <= 0f) mineCooldown = 0.5f;
             if (Stamina == null) Stamina = GetComponent<StaminaSystem>() ?? GetComponentInParent<StaminaSystem>();
+            if (Inventory == null) Inventory = GetComponentInParent<InventorySystem>() ?? GameRoot.Get<InventorySystem>();
+            if (Upgrades == null) Upgrades = GetComponentInParent<UpgradeSystem>() ?? GameRoot.Get<UpgradeSystem>();
         }
 
         public bool TryMine(MineralNode node)
