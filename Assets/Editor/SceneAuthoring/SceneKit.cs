@@ -182,6 +182,35 @@ namespace MinersWatch.Editor
                        ("_warningPanel", warn));
         }
 
+        /// <summary>Touch overlay: virtual joystick + jump (+ optional mine) buttons. Self-hides on non-touch platforms.</summary>
+        internal static void BuildTouchControls(GameObject canvas, bool withMine, Vector2 joyPos)
+        {
+            var root = UIObj("TouchControls", canvas.transform, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero);
+            Fill(root);
+            root.AddComponent<TouchControlsRoot>();
+
+            // Joystick (bottom-left area)
+            var joyBg = Panel("Joystick", root.transform, new Vector2(0, 0), joyPos, new Vector2(300, 300), new Color(1f, 1f, 1f, 0.12f));
+            joyBg.GetComponent<RectTransform>().pivot = Vector2.zero;
+            var knob = Panel("Knob", joyBg.transform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(130, 130), new Color(1f, 1f, 1f, 0.45f));
+            var joy = joyBg.AddComponent<VirtualJoystick>();
+            Wire(joy, ("_knob", knob.GetComponent<RectTransform>()));
+
+            // Jump (bottom-right)
+            var jump = Panel("JumpBtn", root.transform, new Vector2(1, 0), new Vector2(-60, 60), new Vector2(240, 240), new Color(0.3f, 0.8f, 0.4f, 0.35f));
+            jump.GetComponent<RectTransform>().pivot = new Vector2(1, 0);
+            Label("L", "跳", jump.transform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(220, 220), 96, Color.white);
+            jump.AddComponent<TouchActionButton>().SetKind(TouchActionButton.Kind.Jump);
+
+            if (withMine)
+            {
+                var mine = Panel("MineBtn", root.transform, new Vector2(1, 0), new Vector2(-60, 340), new Vector2(240, 240), new Color(0.9f, 0.7f, 0.2f, 0.35f));
+                mine.GetComponent<RectTransform>().pivot = new Vector2(1, 0);
+                Label("L", "挖", mine.transform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(220, 220), 96, Color.white);
+                mine.AddComponent<TouchActionButton>().SetKind(TouchActionButton.Kind.Mine);
+            }
+        }
+
         // ---------- plumbing ----------
 
         internal static void Wire(Component target, params (string field, Object value)[] refs)

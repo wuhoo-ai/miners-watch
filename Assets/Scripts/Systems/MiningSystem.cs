@@ -69,7 +69,7 @@ namespace MinersWatch
         }
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.E) && currentTarget != null)
+            if ((Input.GetKeyDown(KeyCode.E) || TouchInput.ConsumeMine()) && currentTarget != null)
                 TryMine(currentTarget);
         }
         /// <summary>Apply pickaxe upgrade multiplier to stamina cost.</summary>

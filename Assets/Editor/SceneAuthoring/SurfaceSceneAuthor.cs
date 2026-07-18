@@ -166,6 +166,7 @@ namespace MinersWatch.Editor
                          ("_buyWallButton", wall), ("_buySpikeTrapButton", trap), ("_buyTurretButton", turret)); // _shop ← GameRoot fallback
 
             BuildInventoryBar(canvas, new Vector2(160, 30));
+            BuildTouchControls(canvas, withMine: false, joyPos: new Vector2(60, 250)); // above build panel
 
             // Cave entry panel (top-left, under stamina bar): 3 depth buttons, locks via CaveEntryUI
             var cavePanel = Panel("CaveEntryPanel", ct, new Vector2(0, 1), new Vector2(30, -260), new Vector2(460, 560), new Color(0.08f, 0.08f, 0.12f, 0.72f));

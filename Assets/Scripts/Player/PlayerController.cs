@@ -41,9 +41,14 @@ namespace MinersWatch
             rb.gravityScale = 3f;
             rb.constraints = RigidbodyConstraints2D.FreezeRotation;
 
-            // Collider setup
-            var col = GetComponent<BoxCollider2D>();
-            col.size = new Vector2(0.48f, 0.48f);
+            // Collider setup: respect an authored collider, only add a fallback when none exists
+            var col = GetComponent<Collider2D>();
+            if (col == null)
+            {
+                var box = gameObject.AddComponent<BoxCollider2D>();
+                box.size = new Vector2(0.9f, 2.9f);
+                col = box;
+            }
             gameObject.layer = 8; // Player layer
 
             // Ground check point
@@ -51,7 +56,7 @@ namespace MinersWatch
             {
                 var go = new GameObject("GroundCheck");
                 go.transform.SetParent(transform);
-                go.transform.localPosition = new Vector3(0f, -col.size.y / 2f, 0f);
+                go.transform.localPosition = new Vector3(0f, -col.bounds.extents.y, 0f);
                 groundCheckPoint = go.transform;
             }
         }
@@ -85,6 +90,11 @@ namespace MinersWatch
             {
                 moveInput = controls.Player.Move.ReadValue<Vector2>();
             }
+            // Touch overlay wins when actively dragged
+            if (Mathf.Abs(TouchInput.Horizontal) > 0.01f)
+                moveInput = new Vector2(TouchInput.Horizontal, 0f);
+            if (TouchInput.ConsumeJump())
+                TryJump();
         }
 
         private void FixedUpdate()
@@ -118,7 +128,9 @@ namespace MinersWatch
             transform.position = pos;
         }
 
-        private void OnJump(InputAction.CallbackContext context)
+        private void OnJump(InputAction.CallbackContext context) => TryJump();
+
+        private void TryJump()
         {
             if (isGrounded)
             {
