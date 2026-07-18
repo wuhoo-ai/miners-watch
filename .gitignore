@@ -48,3 +48,5 @@ Thumbs.db
 
 # Crashlytics
 crashlytics-build.properties
+.hermes-bridge/ 
+Packages/manifest.json.hermes-bak
