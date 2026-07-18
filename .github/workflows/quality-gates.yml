@@ -2,7 +2,7 @@ name: Quality Gates
 
 on:
   push:
-    branches: [main]
+    branches: [main, v1.1-dev]
   pull_request:
     branches: [main]
 
@@ -29,7 +29,7 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          unityVersion: 6000.0.33f1
+          unityVersion: 6000.5.4f1
           testMode: editmode
 
       - name: Upload test results

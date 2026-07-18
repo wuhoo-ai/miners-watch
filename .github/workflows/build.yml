@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [main]
+    branches: [main, v1.1-dev]
   pull_request:
     branches: [main]
 
@@ -39,7 +39,7 @@ jobs:
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: ${{ matrix.targetPlatform }}
-          unityVersion: 6000.0.33f1
+          unityVersion: 6000.5.4f1
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
