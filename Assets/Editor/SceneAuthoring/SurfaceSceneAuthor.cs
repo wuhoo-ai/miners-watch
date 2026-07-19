@@ -122,6 +122,15 @@ namespace MinersWatch.Editor
                 Rect2D($"Cell_{i:D2}", grid.transform, new Vector3((i - 7) * 1.2f, GroundTopY + 0.05f, 0),
                        new Vector2(1.1f, 0.35f), new Color(1f, 1f, 1f, 0.18f), -5);
 
+            // Pre-place 4 turrets on cells 2, 6, 10, 14 (spread across the grid)
+            // Turret's [RequireComponent] auto-adds CircleCollider2D.
+            int[] turretCells = { 2, 6, 10, 14 };
+            foreach (int i in turretCells)
+            {
+                var cell = grid.transform.Find($"Cell_{i:D2}");
+                if (cell != null) cell.gameObject.AddComponent<Turret>();
+            }
+
             Obj("EnemySpawnPoint", null, new Vector3(-9.2f, GroundTopY + 1.5f, 0));
         }
 
