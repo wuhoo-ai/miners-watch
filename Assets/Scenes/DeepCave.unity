@@ -1751,19 +1751,6 @@ RectTransform:
   m_AnchoredPosition: {x: -60, y: 340}
   m_SizeDelta: {x: 240, y: 240}
   m_Pivot: {x: 1, y: 0}
---- !u!114 &775794124
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 775794122}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1248965566}
-  m_Name: 
-  m_EditorClassIdentifier: MinersWatch.Game::MinersWatch.TouchActionButton
-  _kind: 1
 --- !u!114 &775794125
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3520,19 +3507,6 @@ RectTransform:
   m_AnchoredPosition: {x: -60, y: 60}
   m_SizeDelta: {x: 240, y: 240}
   m_Pivot: {x: 1, y: 0}
---- !u!114 &1765954556
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1765954554}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1248965566}
-  m_Name: 
-  m_EditorClassIdentifier: MinersWatch.Game::MinersWatch.TouchActionButton
-  _kind: 0
 --- !u!114 &1765954557
 MonoBehaviour:
   m_ObjectHideFlags: 0
