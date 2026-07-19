@@ -22,7 +22,14 @@ namespace MinersWatch.Editor
 
         internal static Sprite S(string path) => AssetDatabase.LoadAssetAtPath<Sprite>(path);
 
-        internal static Font F() => Font.CreateDynamicFontFromOSFont("Arial", 14) ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        /// <summary>
+        /// Persistent builtin font asset. NEVER use CreateDynamicFontFromOSFont here:
+        /// it creates a session-local Font whose dynamic atlas texture gets serialized
+        /// INTO the .unity file as garbage and hard-crashes the player on scene load
+        /// (native crash, editor unaffected — 2026-07-19 Android/Windows incident).
+        /// LegacyRuntime.ttf is dynamic w/ OS fallback, so CJK still renders on device.
+        /// </summary>
+        internal static Font F() => Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
         /// <summary>Flat colored rectangle built from a sliced white-ish sprite. Placeholder visuals.</summary>
         internal static GameObject Rect2D(string n, Transform p, Vector3 pos, Vector2 size, Color c, int sorting)
@@ -200,14 +207,14 @@ namespace MinersWatch.Editor
             var jump = Panel("JumpBtn", root.transform, new Vector2(1, 0), new Vector2(-60, 60), new Vector2(240, 240), new Color(0.3f, 0.8f, 0.4f, 0.35f));
             jump.GetComponent<RectTransform>().pivot = new Vector2(1, 0);
             Label("L", "跳", jump.transform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(220, 220), 96, Color.white);
-            jump.AddComponent<TouchActionButton>().SetKind(TouchActionButton.Kind.Jump);
+            jump.AddComponent<JumpButton>();
 
             if (withMine)
             {
                 var mine = Panel("MineBtn", root.transform, new Vector2(1, 0), new Vector2(-60, 340), new Vector2(240, 240), new Color(0.9f, 0.7f, 0.2f, 0.35f));
                 mine.GetComponent<RectTransform>().pivot = new Vector2(1, 0);
                 Label("L", "挖", mine.transform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(220, 220), 96, Color.white);
-                mine.AddComponent<TouchActionButton>().SetKind(TouchActionButton.Kind.Mine);
+                mine.AddComponent<MineButton>();
             }
         }
 

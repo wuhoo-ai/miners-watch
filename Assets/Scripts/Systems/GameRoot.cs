@@ -50,6 +50,33 @@ namespace MinersWatch
         {
             if (_instance == this) _instance = null;
         }
+
+        /// <summary>
+        /// Headless smoke hook: `-auto-newgame` on the command line drives menu→Surface
+        /// and logs a liveness probe, so a player build can be crash-tested over SSH
+        /// with no display or human input (used for the Android-crash triage + W9 CI smoke).
+        /// </summary>
+        private System.Collections.IEnumerator Start()
+        {
+            var args = System.Environment.GetCommandLineArgs();
+            int loadIdx = System.Array.IndexOf(args, "-auto-load");
+            bool newGame = System.Array.IndexOf(args, "-auto-newgame") >= 0;
+            if (loadIdx < 0 && !newGame) yield break;
+
+            string target = loadIdx >= 0 && loadIdx + 1 < args.Length ? args[loadIdx + 1] : "Surface";
+            Debug.Log($"[AutoPilot] armed, target={target}");
+            yield return new WaitForSeconds(3f);
+            Debug.Log($"[AutoPilot] loading {target}...");
+            if (newGame && loadIdx < 0)
+                GetComponent<SceneController>().LoadSurface();
+            else
+                UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(target, UnityEngine.SceneManagement.LoadSceneMode.Additive);
+            yield return new WaitForSeconds(8f);
+            var player = GameObject.FindGameObjectWithTag("Player");
+            Debug.Log($"[AutoPilot] RESULT loaded={UnityEngine.SceneManagement.SceneManager.GetSceneByName(target).isLoaded} player={(player != null)} ALIVE");
+            yield return new WaitForSeconds(1f);
+            Application.Quit(0);
+        }
     }
 
     /// <summary>
