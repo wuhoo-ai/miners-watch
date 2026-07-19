@@ -56,17 +56,4 @@ namespace MinersWatch
     }
 
     /// <summary>One-shot action button (jump / mine) for the touch UI.</summary>
-    public class TouchActionButton : MonoBehaviour, IPointerDownHandler
-    {
-        public enum Kind { Jump, Mine }
-        [SerializeField] private Kind _kind;
-
-        public void SetKind(Kind kind) => _kind = kind;
-
-        public void OnPointerDown(PointerEventData e)
-        {
-            if (_kind == Kind.Jump) TouchInput.PressJump();
-            else TouchInput.PressMine();
-        }
-    }
 }
