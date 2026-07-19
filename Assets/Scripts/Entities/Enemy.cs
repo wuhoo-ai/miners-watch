@@ -16,6 +16,19 @@ namespace MinersWatch
         public float Speed => _speed;
         public bool IsDead => _currentHP <= 0;
 
+        /// <summary>Fires when HP reaches 0 (AFTER death).</summary>
+        public System.Action OnKilled;
+
+        /// <summary>Init from EnemyType (convenience overload for spawners).</summary>
+        public void Init(EnemyType type)
+        {
+            var def = GetDefForType(type);
+            if (def != null)
+                Init(def.hp, def.damage, def.speed);
+            else
+                Init(30, 10, 2f); // fallback
+        }
+
         public virtual void Init(int hp, int damage, float speed)
         {
             _maxHP = hp;
@@ -42,6 +55,8 @@ namespace MinersWatch
         {
             if (damage <= 0 || IsDead) return;
             _currentHP = Mathf.Max(0, _currentHP - damage);
+            if (_currentHP <= 0)
+                OnKilled?.Invoke();
         }
 
         /// <summary>Drop loot when killed. Caller provides inventory to add to.</summary>

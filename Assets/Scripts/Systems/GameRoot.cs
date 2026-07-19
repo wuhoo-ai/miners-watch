@@ -32,6 +32,8 @@ namespace MinersWatch
             go.AddComponent<SceneController>();
             go.AddComponent<SaveSystem>();
             go.AddComponent<NightCurfew>();
+            go.AddComponent<WaveManager>();
+            go.AddComponent<EnemySpawner>();
             return _instance;
         }
 
