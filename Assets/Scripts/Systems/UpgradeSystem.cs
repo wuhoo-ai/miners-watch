@@ -33,6 +33,9 @@ namespace MinersWatch
 
         private void Awake() => Init();
 
+        /// <summary>Reset for new game session.</summary>
+        public void Reset() => Init();
+
         private void GuardCosts()
         {
             if (pickaxeLv2Cost <= 0) pickaxeLv2Cost = 200;

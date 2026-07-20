@@ -33,6 +33,9 @@ namespace MinersWatch
 
         private void Awake() => Init();
 
+        /// <summary>Reset for new game session.</summary>
+        public void Reset() => Init();
+
         /// <summary>Add earnings to accumulated total. Returns newly unlocked depths.</summary>
         public void AddEarnings(int gold)
         {
