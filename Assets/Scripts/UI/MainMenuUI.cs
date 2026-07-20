@@ -46,7 +46,8 @@ namespace MinersWatch
 
         private void OnNewGame()
         {
-            Debug.Log("[MainMenu] New Game → Loading Surface");
+            Debug.Log("[MainMenu] New Game → Resetting systems → Loading Surface");
+            GameRoot.ResetAll();
             var sc = _sceneController != null ? _sceneController : GameRoot.Get<SceneController>();
             if (sc != null)
             {

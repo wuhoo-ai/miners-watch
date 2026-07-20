@@ -30,6 +30,9 @@ namespace MinersWatch
             if (_maxStackSize <= 0) _maxStackSize = 5;
         }
 
+        /// <summary>Clear all items (for new game reset).</summary>
+        public void Clear() => _items.Clear();
+
         /// <summary>Set capacity from backpack upgrade level.</summary>
         public void SetCapacity(int capacity)
         {

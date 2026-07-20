@@ -97,6 +97,18 @@ namespace MinersWatch
 
             var go = new GameObject($"Enemy_{type}_{_enemiesAlive}");
             go.transform.position = pos;
+            go.transform.localScale = Vector3.one * 0.5f;
+
+            // Visual: colored square (procedural, no asset dependency)
+            var sr = go.AddComponent<SpriteRenderer>();
+            sr.sprite = SpriteAtlas.WhiteSquare;
+            sr.color = GetEnemyColor(type);
+            sr.sortingOrder = 3;
+
+            // Collider for Turret detection + AI movement
+            var col = go.AddComponent<CircleCollider2D>();
+            col.radius = 0.4f;
+
             var enemy = go.AddComponent<Enemy>();
             enemy.Init(type);
 
@@ -124,5 +136,14 @@ namespace MinersWatch
             _activeEnemies.Clear();
             _enemiesAlive = 0;
         }
+
+        private static Color GetEnemyColor(EnemyType type) => type switch
+        {
+            EnemyType.Rockworm => new Color(0.55f, 0.35f, 0.15f), // brown
+            EnemyType.Shadow   => new Color(0.35f, 0.15f, 0.55f), // purple
+            EnemyType.Lavabeast => new Color(0.85f, 0.25f, 0.15f), // red-orange
+            EnemyType.Guardian => new Color(0.85f, 0.75f, 0.25f), // gold
+            _ => Color.gray,
+        };
     }
 }

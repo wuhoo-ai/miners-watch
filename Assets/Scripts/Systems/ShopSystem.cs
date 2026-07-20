@@ -99,7 +99,57 @@ namespace MinersWatch
             if (def.costIron > 0)
                 _inventory.RemoveItem(MineralType.Iron, def.costIron);
 
+            // Actually place the building on the BuildGrid
+            PlaceDefense(type, def);
             return true;
+        }
+
+        private void PlaceDefense(DefenseType type, DefenseDef def)
+        {
+            Transform grid = GameObject.Find("BuildGrid")?.transform;
+            if (grid == null) return;
+
+            // Find first empty cell
+            for (int i = 0; i < grid.childCount; i++)
+            {
+                var cell = grid.GetChild(i);
+                if (cell.childCount == 0) // empty slot
+                {
+                    var go = new GameObject($"Defense_{type}_{i}");
+                    go.transform.SetParent(cell, false);
+                    go.transform.localPosition = Vector3.zero;
+                    go.transform.localScale = Vector3.one * 0.6f;
+
+                    var sr = go.AddComponent<SpriteRenderer>();
+                    sr.sortingOrder = 2;
+                    sr.color = type switch
+                    {
+                        DefenseType.Wall => new Color(0.4f, 0.4f, 0.4f),      // gray
+                        DefenseType.SpikeTrap => new Color(0.7f, 0.3f, 0.2f),   // rust
+                        DefenseType.Turret => new Color(0.2f, 0.5f, 0.3f),      // green
+                        _ => Color.gray,
+                    };
+                    sr.sprite = SpriteAtlas.WhiteSquare;
+
+                    if (type == DefenseType.Turret)
+                    {
+                        var turret = go.AddComponent<Turret>();
+                        turret.Init(def.hp);
+                    }
+                    else if (type == DefenseType.Wall)
+                    {
+                        var wall = go.AddComponent<Wall>();
+                        wall.Init(def.hp);
+                    }
+                    else if (type == DefenseType.SpikeTrap)
+                    {
+                        var trap = go.AddComponent<SpikeTrap>();
+                        trap.Init(def.hp);
+                    }
+
+                    return; // placed
+                }
+            }
         }
 
         /// <summary>Check if player can afford defense.</summary>

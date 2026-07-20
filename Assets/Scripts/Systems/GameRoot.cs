@@ -41,6 +41,30 @@ namespace MinersWatch
         public static T Get<T>() where T : Component =>
             _instance != null ? _instance.GetComponent<T>() : null;
 
+        /// <summary>Reset all systems for a fresh game session. Call before LoadSurface on replay.</summary>
+        public static void ResetAll()
+        {
+            if (_instance == null) return;
+
+            var inv = Get<InventorySystem>();
+            if (inv != null) inv.Clear();
+
+            var upg = Get<UpgradeSystem>();
+            if (upg != null) upg.Reset();
+
+            var dnc = Get<DayNightCycle>();
+            if (dnc != null) dnc.ResetToDayStart();
+
+            var dp = Get<DepthProgression>();
+            if (dp != null) dp.Reset();
+
+            var wm = Get<WaveManager>();
+            if (wm != null) wm.EndNight();
+
+            var es = Get<EnemySpawner>();
+            if (es != null) es.StopAllCoroutines(); // kill any spawn coroutines
+        }
+
         private void Awake()
         {
             if (_instance != null && _instance != this) { Destroy(gameObject); return; }
