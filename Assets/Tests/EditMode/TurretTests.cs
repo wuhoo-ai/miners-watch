@@ -31,6 +31,7 @@ namespace MinersWatch.Tests.EditMode
             // FireAtTime at time=10 — should pick nearest (e2 at dist=1)
             int dmg = t.FireAtTime(e2.transform, 10f);
             Assert.Greater(dmg, 0, "should deal damage to nearest");
+            e2.TakeDamage(dmg);
             Assert.AreEqual(35, e2.CurrentHP);
             Assert.AreEqual(50, e1.CurrentHP, "farther untouched");
         }
@@ -42,7 +43,8 @@ namespace MinersWatch.Tests.EditMode
             var e = CreateMockEnemy(new Vector3(1, 0, 0), 50);
             t.EnemiesInRange.Add(e);
 
-            t.FireAtTime(e.transform, 10f); // first shot at t=10
+            int dmg0 = t.FireAtTime(e.transform, 10f); // first shot at t=10
+            e.TakeDamage(dmg0);
             Assert.AreEqual(35, e.CurrentHP);
 
             int dmg2 = t.FireAtTime(e.transform, 11f); // t=11 < interval (2.0)
@@ -51,6 +53,7 @@ namespace MinersWatch.Tests.EditMode
 
             int dmg3 = t.FireAtTime(e.transform, 12.1f); // t=12.1 → cooldown expired
             Assert.AreEqual(15, dmg3);
+            e.TakeDamage(dmg3);
             Assert.AreEqual(20, e.CurrentHP);
         }
 
@@ -89,6 +92,7 @@ namespace MinersWatch.Tests.EditMode
             // FireAtTime should skip dead enemy
             int dmg = t.FireAtTime(alive.transform, 10f);
             Assert.Greater(dmg, 0, "should hit alive enemy");
+            alive.TakeDamage(dmg);
             Assert.AreEqual(15, alive.CurrentHP);
         }
 
