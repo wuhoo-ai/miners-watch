@@ -48,18 +48,18 @@ namespace MinersWatch.Tests.EditMode
         }
 
         [Test]
-        public void Mid_UnlocksAt500()
+        public void Mid_UnlocksAt50()
         {
-            _dp.AddEarnings(500);
+            _dp.AddEarnings(50);
             Assert.IsTrue(_dp.IsMidUnlocked);
             Assert.IsTrue(_dp.CanEnterDepth(DepthLevel.Medium));
             Assert.IsFalse(_dp.IsDeepUnlocked); // deep still locked
         }
 
         [Test]
-        public void Deep_UnlocksAt2000()
+        public void Deep_UnlocksAt100()
         {
-            _dp.AddEarnings(2000);
+            _dp.AddEarnings(100);
             Assert.IsTrue(_dp.IsMidUnlocked);
             Assert.IsTrue(_dp.IsDeepUnlocked);
             Assert.IsTrue(_dp.CanEnterDepth(DepthLevel.Deep));
@@ -68,9 +68,9 @@ namespace MinersWatch.Tests.EditMode
         [Test]
         public void AccumulatedGold_Increments()
         {
-            _dp.AddEarnings(300);
-            _dp.AddEarnings(250);
-            Assert.AreEqual(550, _dp.AccumulatedGold);
+            _dp.AddEarnings(30);
+            _dp.AddEarnings(25);
+            Assert.AreEqual(55, _dp.AccumulatedGold);
             Assert.IsTrue(_dp.IsMidUnlocked);
         }
 
@@ -81,12 +81,12 @@ namespace MinersWatch.Tests.EditMode
             DepthLevel lastUnlock = DepthLevel.Shallow;
             _dp.OnDepthUnlocked += d => { events++; lastUnlock = d; };
 
-            _dp.AddEarnings(500);
+            _dp.AddEarnings(50);
             Assert.AreEqual(1, events);
             Assert.AreEqual(DepthLevel.Medium, lastUnlock);
 
             // Add more — no duplicate event for Mid
-            _dp.AddEarnings(100);
+            _dp.AddEarnings(10);
             Assert.AreEqual(1, events);
         }
 
@@ -96,7 +96,7 @@ namespace MinersWatch.Tests.EditMode
             int events = 0;
             _dp.OnDepthUnlocked += _ => events++;
 
-            _dp.AddEarnings(2000); // unlocks both in one shot
+            _dp.AddEarnings(100); // unlocks both in one shot
             Assert.AreEqual(2, events);
         }
 
