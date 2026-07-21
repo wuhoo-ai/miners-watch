@@ -137,13 +137,5 @@ namespace MinersWatch
             _enemiesAlive = 0;
         }
 
-        private static Color GetEnemyColor(EnemyType type) => type switch
-        {
-            EnemyType.Rockworm => new Color(0.55f, 0.35f, 0.15f), // brown
-            EnemyType.Shadow   => new Color(0.35f, 0.15f, 0.55f), // purple
-            EnemyType.Lavabeast => new Color(0.85f, 0.25f, 0.15f), // red-orange
-            EnemyType.Guardian => new Color(0.85f, 0.75f, 0.25f), // gold
-            _ => Color.gray,
-        };
     }
 }
