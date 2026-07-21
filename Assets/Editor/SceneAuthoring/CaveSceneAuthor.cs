@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.UI;
 using static MinersWatch.Editor.SceneKit;
 
 namespace MinersWatch.Editor
