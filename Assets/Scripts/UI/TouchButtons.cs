@@ -14,4 +14,10 @@ namespace MinersWatch
     {
         public void OnPointerDown(PointerEventData e) => TouchInput.PressMine();
     }
+
+    /// <summary>Standalone attack button.</summary>
+    public class AttackButton : MonoBehaviour, IPointerDownHandler
+    {
+        public void OnPointerDown(PointerEventData e) => TouchInput.PressAttack();
+    }
 }

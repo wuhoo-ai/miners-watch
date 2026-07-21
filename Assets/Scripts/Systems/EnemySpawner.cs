@@ -99,10 +99,10 @@ namespace MinersWatch
             go.transform.position = pos;
             go.transform.localScale = Vector3.one * 0.5f;
 
-            // Visual: colored square (procedural, no asset dependency)
+            // Visual: procedural pixel-art sprite per enemy type
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = SpriteAtlas.WhiteSquare;
-            sr.color = GetEnemyColor(type);
+            sr.sprite = ProceduralSprites.Get(type);
+            sr.color = Color.white;
             sr.sortingOrder = 3;
 
             // Collider for Turret detection + AI movement

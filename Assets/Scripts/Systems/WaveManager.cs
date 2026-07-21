@@ -74,10 +74,10 @@ namespace MinersWatch
             return false;
         }
 
-        /// <summary>Static wave definitions — mirrors GDD §3.4.</summary>
+        /// <summary>Static wave definitions — mirrors GDD §3.4. Difficulty scales enemy count.</summary>
         public static WaveConfig GetWaveConfig(DepthLevel depth, int waveIndex)
         {
-            return depth switch
+            var cfg = depth switch
             {
                 DepthLevel.Shallow => waveIndex switch
                 {
@@ -101,6 +101,9 @@ namespace MinersWatch
                 },
                 _ => new WaveConfig { waveNumber = 1, enemyCount = 3, enemyType = EnemyType.Rockworm },
             };
+
+            cfg.enemyCount = Mathf.Max(1, Mathf.RoundToInt(cfg.enemyCount * GameSettings.EnemyCountMultiplier));
+            return cfg;
         }
     }
 }

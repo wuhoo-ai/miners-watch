@@ -97,11 +97,26 @@ namespace MinersWatch.Editor
             T("BgmLabel", "音乐: 60%", 48, new Color(0.8f, 0.8f, 0.8f), panel.transform, L, new Vector2(0.5f, 0.32f), new Vector2(700, 60));
             var bgmSlider = MakeSlider("BgmSlider", panel.transform, L, new Vector2(0.5f, 0.26f), 0.6f);
 
+            // Difficulty
+            T("DiffLabel", "难度: 普通", 44, new Color(0.8f, 0.8f, 0.8f), panel.transform, L, new Vector2(0.5f, 0.19f), new Vector2(600, 50));
+            var diffEasy = B("DiffEasy", "简单", new Vector2(-160, 250), panel.transform, L);
+            diffEasy.GetComponent<RectTransform>().sizeDelta = new Vector2(220, 90);
+            diffEasy.transform.Find("L").GetComponent<Text>().fontSize = 44;
+            var diffNormal = B("DiffNormal", "普通", new Vector2(0, 250), panel.transform, L);
+            diffNormal.GetComponent<RectTransform>().sizeDelta = new Vector2(220, 90);
+            diffNormal.transform.Find("L").GetComponent<Text>().fontSize = 44;
+            var diffHard = B("DiffHard", "困难", new Vector2(160, 250), panel.transform, L);
+            diffHard.GetComponent<RectTransform>().sizeDelta = new Vector2(220, 90);
+            diffHard.transform.Find("L").GetComponent<Text>().fontSize = 44;
+
+            // Help text
+            T("HelpLabel", "摇杆=移动 | 跳=跳跃 | 击=攻击 | 挖=采矿", 32, new Color(0.5f, 0.5f, 0.55f), panel.transform, L, new Vector2(0.5f, 0.11f), new Vector2(1400, 50));
+
             // Version
-            T("VersionLabel", "矿工守夜 v1.1", 36, new Color(0.35f, 0.35f, 0.4f), panel.transform, L, new Vector2(0.5f, 0.08f), new Vector2(800, 50));
+            T("VersionLabel", "矿工守夜 v1.2", 36, new Color(0.35f, 0.35f, 0.4f), panel.transform, L, new Vector2(0.5f, 0.05f), new Vector2(800, 50));
 
             // Close button
-            var closeBtn = B("CloseSettingsBtn", "关闭", new Vector2(0, 500), panel.transform, L);
+            var closeBtn = B("CloseSettingsBtn", "关闭", new Vector2(0, 540), panel.transform, L);
             closeBtn.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 120);
             var closeLabel = closeBtn.transform.Find("L")?.GetComponent<Text>();
             if (closeLabel != null) closeLabel.fontSize = 56;
@@ -117,6 +132,21 @@ namespace MinersWatch.Editor
             so.FindProperty("_bgmLabel").objectReferenceValue = GameObject.Find("BgmLabel")?.GetComponent<Text>();
             so.FindProperty("_versionLabel").objectReferenceValue = GameObject.Find("VersionLabel")?.GetComponent<Text>();
             so.ApplyModifiedProperties();
+
+            // Difficulty button wiring
+            var diffLabel = GameObject.Find("DiffLabel")?.GetComponent<Text>();
+            diffEasy.GetComponent<Button>().onClick.AddListener(() => {
+                GameSettings.Current = GameSettings.Difficulty.Easy;
+                if (diffLabel != null) diffLabel.text = "难度: 简单";
+            });
+            diffNormal.GetComponent<Button>().onClick.AddListener(() => {
+                GameSettings.Current = GameSettings.Difficulty.Normal;
+                if (diffLabel != null) diffLabel.text = "难度: 普通";
+            });
+            diffHard.GetComponent<Button>().onClick.AddListener(() => {
+                GameSettings.Current = GameSettings.Difficulty.Hard;
+                if (diffLabel != null) diffLabel.text = "难度: 困难";
+            });
 
             // Close button hides the panel
             closeBtn.GetComponent<Button>().onClick.AddListener(() => cv.enabled = false);

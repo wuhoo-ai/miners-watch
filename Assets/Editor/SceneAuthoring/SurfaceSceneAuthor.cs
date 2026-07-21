@@ -38,7 +38,7 @@ namespace MinersWatch.Editor
 
         static void BuildCamera()
         {
-            var go = new GameObject("Main Camera", typeof(Camera), typeof(AudioListener));
+            var go = new GameObject("Main Camera", typeof(Camera), typeof(AudioListener), typeof(ScreenShake));
             go.tag = "MainCamera";
             var cam = go.GetComponent<Camera>();
             cam.orthographic = true;
@@ -104,6 +104,7 @@ namespace MinersWatch.Editor
 
             p.AddComponent<StaminaSystem>();
             p.AddComponent<PlayerHP>(); // _upgrades resolves from GameRoot at runtime
+            p.AddComponent<WeaponSystem>(); // melee attack
         }
 
         static void BuildWorldMarkers()
@@ -200,6 +201,13 @@ namespace MinersWatch.Editor
 
             // Game over overlay (hidden)
             var ov = Panel("GameOverOverlay", ct, new Vector2(0.5f, 0.5f), Vector2.zero, Vector2.zero, new Color(0, 0, 0, 0.9f));
+
+            // Damage popup (hidden, singleton for floating text)
+            var dmgGo = UIObj("DamagePopup", ct, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(400, 80));
+            var dmgTxt = dmgGo.AddComponent<Text>();
+            dmgTxt.text = ""; dmgTxt.fontSize = 42; dmgTxt.alignment = TextAnchor.MiddleCenter;
+            dmgTxt.font = Font.CreateDynamicFontFromOSFont("Arial", 14) ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            dmgGo.AddComponent<DamagePopup>();
             Fill(ov);
             Label("GameOverText", "游戏结束", ov.transform, new Vector2(0.5f, 0.55f), Vector2.zero, new Vector2(800, 160), 112, new Color(0.9f, 0.2f, 0.2f));
             var rb2 = Btn("RestartBtn", "重新开始", ov.transform, new Vector2(0.5f, 0.5f), new Vector2(0, -60), new Vector2(680, 160), new Color(0.2f, 0.5f, 0.2f), 56);

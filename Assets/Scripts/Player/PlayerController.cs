@@ -25,6 +25,7 @@ namespace MinersWatch
         private StaminaSystem stamina;
         private Animator animator;
         private PlayerControls controls;
+        private WeaponSystem _weapon;
         private bool isGrounded;
 
         private Vector2 moveInput;
@@ -34,6 +35,7 @@ namespace MinersWatch
             rb = GetComponent<Rigidbody2D>();
             stamina = GetComponent<StaminaSystem>() ?? gameObject.AddComponent<StaminaSystem>();
             animator = GetComponent<Animator>();
+            _weapon = GetComponent<WeaponSystem>();
             controls = new PlayerControls();
 
             // Rigidbody2D defaults
@@ -95,6 +97,8 @@ namespace MinersWatch
                 moveInput = new Vector2(TouchInput.Horizontal, 0f);
             if (TouchInput.ConsumeJump())
                 TryJump();
+            if (TouchInput.ConsumeAttack() && _weapon != null)
+                _weapon.TryAttack();
         }
 
         private void FixedUpdate()

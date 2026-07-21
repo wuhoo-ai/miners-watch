@@ -7,13 +7,15 @@ namespace MinersWatch
     public static class TouchInput
     {
         public static float Horizontal;
-        private static bool _jump, _mine;
+        private static bool _jump, _mine, _attack;
 
         public static void PressJump() => _jump = true;
         public static void PressMine() => _mine = true;
+        public static void PressAttack() => _attack = true;
         public static bool ConsumeJump() { var v = _jump; _jump = false; return v; }
         public static bool ConsumeMine() { var v = _mine; _mine = false; return v; }
-        public static void Reset() { Horizontal = 0f; _jump = _mine = false; }
+        public static bool ConsumeAttack() { var v = _attack; _attack = false; return v; }
+        public static void Reset() { Horizontal = 0f; _jump = _mine = _attack = false; }
     }
 
     /// <summary>Root of the touch UI: hides itself on non-touch platforms.</summary>

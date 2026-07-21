@@ -58,7 +58,7 @@ namespace MinersWatch.Editor
             BuildCanvas(def);
 
             // Camera: smooth follow, clamped so the view never leaves the cave
-            var camGo = new GameObject("Main Camera", typeof(Camera), typeof(AudioListener));
+            var camGo = new GameObject("Main Camera", typeof(Camera), typeof(AudioListener), typeof(ScreenShake));
             camGo.tag = "MainCamera";
             var cam = camGo.GetComponent<Camera>();
             cam.orthographic = true;
@@ -143,6 +143,7 @@ namespace MinersWatch.Editor
             SetFloats(pc, ("minX", -def.HalfW + 0.8f), ("maxX", def.HalfW - 0.8f));
             p.AddComponent<StaminaSystem>();
             p.AddComponent<PlayerHP>();
+            p.AddComponent<WeaponSystem>(); // melee attack
             p.AddComponent<MiningSystem>(); // Inventory/Upgrades ← GameRoot fallback
 
             return p;
@@ -186,6 +187,13 @@ namespace MinersWatch.Editor
             BuildDayNightHUD(canvas);
             BuildInventoryBar(canvas, new Vector2(0, 30));
             BuildTouchControls(canvas, withMine: true, joyPos: new Vector2(140, 60));
+
+            // Damage popup (singleton for floating text)
+            var dmgGo = UIObj("DamagePopup", ct, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(400, 80));
+            var dmgTxt = dmgGo.AddComponent<Text>();
+            dmgTxt.text = ""; dmgTxt.fontSize = 42; dmgTxt.alignment = TextAnchor.MiddleCenter;
+            dmgTxt.font = Font.CreateDynamicFontFromOSFont("Arial", 14) ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            dmgGo.AddComponent<DamagePopup>();
 
             // Depth title (top-right) + mining hint (bottom-right)
             var title = Label("CaveTitle", def.Title, ct, new Vector2(1, 1), new Vector2(-40, -40), new Vector2(420, 90), 60, new Color(1f, 0.9f, 0.7f));

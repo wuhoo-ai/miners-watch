@@ -57,6 +57,7 @@ namespace MinersWatch.Editor
             canvas.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.AddComponent<CanvasScaler>().referenceResolution = new Vector2(1920, 1080);
             canvas.AddComponent<GraphicRaycaster>();
+            canvas.AddComponent<AdaptiveCanvas>(); // auto-adjust for device aspect
             return canvas;
         }
 
@@ -209,9 +210,15 @@ namespace MinersWatch.Editor
             Label("L", "跳", jump.transform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(220, 220), 96, Color.white);
             jump.AddComponent<JumpButton>();
 
+            // Attack (above jump)
+            var atk = Panel("AttackBtn", root.transform, new Vector2(1, 0), new Vector2(-60, 340), new Vector2(240, 240), new Color(0.9f, 0.3f, 0.2f, 0.35f));
+            atk.GetComponent<RectTransform>().pivot = new Vector2(1, 0);
+            Label("L", "击", atk.transform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(220, 220), 96, Color.white);
+            atk.AddComponent<AttackButton>();
+
             if (withMine)
             {
-                var mine = Panel("MineBtn", root.transform, new Vector2(1, 0), new Vector2(-60, 340), new Vector2(240, 240), new Color(0.9f, 0.7f, 0.2f, 0.35f));
+                var mine = Panel("MineBtn", root.transform, new Vector2(1, 0), new Vector2(-60, 620), new Vector2(240, 240), new Color(0.9f, 0.7f, 0.2f, 0.35f));
                 mine.GetComponent<RectTransform>().pivot = new Vector2(1, 0);
                 Label("L", "挖", mine.transform, new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(220, 220), 96, Color.white);
                 mine.AddComponent<MineButton>();
