@@ -37,12 +37,16 @@ namespace MinersWatch
         {
             if (_gameOverPanel != null) _gameOverPanel.SetActive(true);
             if (_victoryPanel != null) _victoryPanel.SetActive(false);
+            AudioManager.SFX("sfx_game_over");
+            GameRoot.AutoSave(); // save progress on death
         }
 
         public void ShowVictory()
         {
             if (_victoryPanel != null) _victoryPanel.SetActive(true);
             if (_gameOverPanel != null) _gameOverPanel.SetActive(false);
+            AudioManager.SFX("sfx_victory");
+            GameRoot.AutoSave(); // save progress on victory
         }
 
         public void Hide()

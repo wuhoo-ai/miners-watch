@@ -185,7 +185,7 @@ namespace MinersWatch.Editor
 
             BuildDayNightHUD(canvas);
             BuildInventoryBar(canvas, new Vector2(0, 30));
-            BuildTouchControls(canvas, withMine: true, joyPos: new Vector2(60, 60));
+            BuildTouchControls(canvas, withMine: true, joyPos: new Vector2(140, 60));
 
             // Depth title (top-right) + mining hint (bottom-right)
             var title = Label("CaveTitle", def.Title, ct, new Vector2(1, 1), new Vector2(-40, -40), new Vector2(420, 90), 60, new Color(1f, 0.9f, 0.7f));

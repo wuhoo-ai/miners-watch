@@ -47,6 +47,10 @@ namespace MinersWatch.Editor
             so.FindProperty("_continueButton").objectReferenceValue = b2?.GetComponent<Button>();
             so.FindProperty("_settingsButton").objectReferenceValue = b3?.GetComponent<Button>();
             so.FindProperty("_mainCanvas").objectReferenceValue = cv;
+
+            // Settings panel (overlay, hidden by default)
+            var settingsCanvas = BuildSettingsPanel(go.transform, L);
+            so.FindProperty("_settingsCanvas").objectReferenceValue = settingsCanvas.GetComponent<Canvas>();
             so.ApplyModifiedProperties();
         }
 
@@ -68,5 +72,97 @@ namespace MinersWatch.Editor
         }
         static void FS(GameObject g) { var r = g.GetComponent<RectTransform>(); r.anchorMin = Vector2.zero; r.anchorMax = Vector2.one; r.offsetMin = r.offsetMax = Vector2.zero; }
         static Font GF() => Font.CreateDynamicFontFromOSFont("Arial", 14) ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+
+        static GameObject BuildSettingsPanel(Transform parent, int L)
+        {
+            var panel = C("SettingsPanel", parent, L);
+            FS(panel);
+            panel.AddComponent<Image>().color = new Color(0.04f, 0.04f, 0.08f, 0.95f);
+            var cv = panel.AddComponent<Canvas>();
+            cv.overrideSorting = true;
+            cv.sortingOrder = 200;
+
+            // Title
+            T("SettingsTitle", "设置", 90, Color.white, panel.transform, L, new Vector2(0.5f, 0.85f), new Vector2(600, 120));
+
+            // Master volume
+            T("MasterLabel", "主音量: 80%", 48, new Color(0.8f, 0.8f, 0.8f), panel.transform, L, new Vector2(0.5f, 0.62f), new Vector2(700, 60));
+            var masterSlider = MakeSlider("MasterSlider", panel.transform, L, new Vector2(0.5f, 0.56f), 0.8f);
+
+            // SFX volume
+            T("SfxLabel", "音效: 100%", 48, new Color(0.8f, 0.8f, 0.8f), panel.transform, L, new Vector2(0.5f, 0.47f), new Vector2(700, 60));
+            var sfxSlider = MakeSlider("SfxSlider", panel.transform, L, new Vector2(0.5f, 0.41f), 1f);
+
+            // BGM volume
+            T("BgmLabel", "音乐: 60%", 48, new Color(0.8f, 0.8f, 0.8f), panel.transform, L, new Vector2(0.5f, 0.32f), new Vector2(700, 60));
+            var bgmSlider = MakeSlider("BgmSlider", panel.transform, L, new Vector2(0.5f, 0.26f), 0.6f);
+
+            // Version
+            T("VersionLabel", "矿工守夜 v1.1", 36, new Color(0.35f, 0.35f, 0.4f), panel.transform, L, new Vector2(0.5f, 0.08f), new Vector2(800, 50));
+
+            // Close button
+            var closeBtn = B("CloseSettingsBtn", "关闭", new Vector2(0, 500), panel.transform, L);
+            closeBtn.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 120);
+            var closeLabel = closeBtn.transform.Find("L")?.GetComponent<Text>();
+            if (closeLabel != null) closeLabel.fontSize = 56;
+
+            // Wire SettingsUI
+            var ui = panel.AddComponent<SettingsUI>();
+            var so = new SerializedObject(ui);
+            so.FindProperty("_masterSlider").objectReferenceValue = masterSlider.GetComponent<Slider>();
+            so.FindProperty("_sfxSlider").objectReferenceValue = sfxSlider.GetComponent<Slider>();
+            so.FindProperty("_bgmSlider").objectReferenceValue = bgmSlider.GetComponent<Slider>();
+            so.FindProperty("_masterLabel").objectReferenceValue = GameObject.Find("MasterLabel")?.GetComponent<Text>();
+            so.FindProperty("_sfxLabel").objectReferenceValue = GameObject.Find("SfxLabel")?.GetComponent<Text>();
+            so.FindProperty("_bgmLabel").objectReferenceValue = GameObject.Find("BgmLabel")?.GetComponent<Text>();
+            so.FindProperty("_versionLabel").objectReferenceValue = GameObject.Find("VersionLabel")?.GetComponent<Text>();
+            so.ApplyModifiedProperties();
+
+            // Close button hides the panel
+            closeBtn.GetComponent<Button>().onClick.AddListener(() => cv.enabled = false);
+
+            cv.enabled = false; // hidden by default
+            return panel;
+        }
+
+        static GameObject MakeSlider(string name, Transform parent, int L, Vector2 pos, float defaultValue)
+        {
+            var go = new GameObject(name, typeof(RectTransform), typeof(Slider));
+            go.layer = L;
+            go.transform.SetParent(parent, false);
+            var rt = go.GetComponent<RectTransform>();
+            rt.anchorMin = rt.anchorMax = pos;
+            rt.sizeDelta = new Vector2(1200, 60);
+
+            // Background
+            var bg = new GameObject("Background", typeof(RectTransform), typeof(Image));
+            bg.layer = L; bg.transform.SetParent(go.transform, false);
+            var bgrt = bg.GetComponent<RectTransform>();
+            bgrt.anchorMin = Vector2.zero; bgrt.anchorMax = Vector2.one;
+            bgrt.offsetMin = Vector2.zero; bgrt.offsetMax = Vector2.zero;
+            bg.GetComponent<Image>().color = new Color(0.2f, 0.2f, 0.2f);
+
+            // Fill Area
+            var fillArea = new GameObject("FillArea", typeof(RectTransform));
+            fillArea.layer = L; fillArea.transform.SetParent(go.transform, false);
+            var fart = fillArea.GetComponent<RectTransform>();
+            fart.anchorMin = Vector2.zero; fart.anchorMax = Vector2.one;
+            fart.offsetMin = new Vector2(4, 6); fart.offsetMax = new Vector2(-4, -6);
+
+            var fill = new GameObject("Fill", typeof(RectTransform), typeof(Image));
+            fill.layer = L; fill.transform.SetParent(fillArea.transform, false);
+            var frt = fill.GetComponent<RectTransform>();
+            frt.anchorMin = Vector2.zero; frt.anchorMax = new Vector2(1, 1);
+            frt.offsetMin = frt.offsetMax = Vector2.zero;
+            fill.GetComponent<Image>().color = new Color(0.3f, 0.7f, 0.3f);
+
+            var slider = go.GetComponent<Slider>();
+            slider.fillRect = fill.GetComponent<RectTransform>();
+            slider.minValue = 0; slider.maxValue = 1; slider.value = defaultValue;
+            slider.interactable = true;
+            slider.transition = Selectable.Transition.None;
+
+            return go;
+        }
     }
 }

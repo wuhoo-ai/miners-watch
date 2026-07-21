@@ -34,6 +34,7 @@ namespace MinersWatch
             go.AddComponent<NightCurfew>();
             go.AddComponent<WaveManager>();
             go.AddComponent<EnemySpawner>();
+            go.AddComponent<AudioManager>();
             return _instance;
         }
 
@@ -63,6 +64,86 @@ namespace MinersWatch
 
             var es = Get<EnemySpawner>();
             if (es != null) es.StopAllCoroutines(); // kill any spawn coroutines
+        }
+
+        /// <summary>Collect current game state into a SaveData snapshot.</summary>
+        public static SaveData GatherSaveData()
+        {
+            var data = SaveData.CreateDefault();
+
+            var dp = Get<DepthProgression>();
+            if (dp != null) data.depthLevel = (int)dp.CurrentDepth;
+
+            var upg = Get<UpgradeSystem>();
+            if (upg != null)
+            {
+                data.gold = upg.Gold;
+                data.upgradeLevels.Clear();
+                foreach (UpgradeType t in System.Enum.GetValues(typeof(UpgradeType)))
+                    data.upgradeLevels.Add(new UpgradeEntry { key = t.ToString(), value = upg.GetLevel(t) });
+            }
+
+            var inv = Get<InventorySystem>();
+            if (inv != null)
+            {
+                data.inventory.Clear();
+                foreach (var item in inv.Items)
+                    data.inventory.Add(InventoryEntry.FromItem(item));
+            }
+
+            var wm = Get<WaveManager>();
+            if (wm != null) data.waveProgress = wm.CurrentWave;
+
+            return data;
+        }
+
+        /// <summary>Restore game state from a SaveData snapshot.</summary>
+        public static void RestoreFromSave(SaveData data)
+        {
+            if (data == null) return;
+
+            var dp = Get<DepthProgression>();
+            if (dp != null) dp.SetDepth((DepthLevel)data.depthLevel);
+
+            var upg = Get<UpgradeSystem>();
+            if (upg != null)
+            {
+                upg.AddGold(data.gold);
+                if (data.upgradeLevels != null)
+                {
+                    foreach (var entry in data.upgradeLevels)
+                    {
+                        if (System.Enum.TryParse<UpgradeType>(entry.key, out var t))
+                        {
+                            int current = upg.GetLevel(t);
+                            while (current < entry.value)
+                            {
+                                upg.BuyUpgrade(t);
+                                current++;
+                            }
+                        }
+                    }
+                }
+            }
+
+            Debug.Log($"[GameRoot] Restored from save: gold={data.gold}, depth={data.depthLevel}, wave={data.waveProgress}");
+        }
+
+        /// <summary>Auto-save current game state.</summary>
+        public static void AutoSave()
+        {
+            var ss = Get<SaveSystem>();
+            if (ss == null) return;
+            var data = GatherSaveData();
+            ss.Save(data);
+            Debug.Log($"[GameRoot] Auto-saved: gold={data.gold}, depth={data.depthLevel}");
+        }
+
+        /// <summary>Check if a save file exists.</summary>
+        public static bool HasSave()
+        {
+            var ss = Get<SaveSystem>();
+            return ss != null && ss.HasSave();
         }
 
         private void Awake()
@@ -129,7 +210,10 @@ namespace MinersWatch
         private void OnPhase(DayNightPhase phase)
         {
             if (phase == DayNightPhase.NightTransition && _scenes != null && _scenes.IsInCave)
+            {
+                GameRoot.AutoSave(); // save progress before forced return
                 _scenes.LoadSurface();
+            }
         }
     }
 }

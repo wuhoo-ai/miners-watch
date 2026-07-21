@@ -161,6 +161,12 @@ namespace MinersWatch.Editor
             var armor = PanelBtn(shopPanel, 2, "升级护甲 $150", new Color(0.25f, 0.35f, 0.6f));
             var pack = PanelBtn(shopPanel, 3, "升级背包 $100", new Color(0.25f, 0.35f, 0.6f));
 
+            // Wire shop button labels for reactive level/cost updates
+            var sellLabel = sell.transform.Find("L")?.GetComponent<Text>();
+            var pickLabel = pick.transform.Find("L")?.GetComponent<Text>();
+            var armorLabel = armor.transform.Find("L")?.GetComponent<Text>();
+            var packLabel = pack.transform.Find("L")?.GetComponent<Text>();
+
             // Build panel (bottom-left, 3 icon buttons)
             var buildPanel = Panel("BuildPanel", ct, new Vector2(0, 0), new Vector2(30, 30), new Vector2(1060, 190), new Color(0.08f, 0.08f, 0.12f, 0.72f));
             buildPanel.GetComponent<RectTransform>().pivot = Vector2.zero;
@@ -172,17 +178,19 @@ namespace MinersWatch.Editor
             Wire(shopUI, ("_goldText", gold.GetComponent<Text>()),
                          ("_sellAllButton", sell), ("_buyPickaxeButton", pick),
                          ("_buyArmorButton", armor), ("_buyBackpackButton", pack),
-                         ("_buyWallButton", wall), ("_buySpikeTrapButton", trap), ("_buyTurretButton", turret)); // _shop ← GameRoot fallback
+                         ("_buyWallButton", wall), ("_buySpikeTrapButton", trap), ("_buyTurretButton", turret),
+                         ("_sellAllLabel", sellLabel), ("_pickaxeLabel", pickLabel),
+                         ("_armorLabel", armorLabel), ("_backpackLabel", packLabel)); // _shop ← GameRoot fallback
 
             BuildInventoryBar(canvas, new Vector2(160, 30));
-            BuildTouchControls(canvas, withMine: false, joyPos: new Vector2(60, 250)); // above build panel
+            BuildTouchControls(canvas, withMine: false, joyPos: new Vector2(140, 250)); // joystick shifted right for thumb reach
 
             // Cave entry panel (top-left, under stamina bar): 3 depth buttons, locks via CaveEntryUI
             var cavePanel = Panel("CaveEntryPanel", ct, new Vector2(0, 1), new Vector2(30, -260), new Vector2(460, 560), new Color(0.08f, 0.08f, 0.12f, 0.72f));
             cavePanel.GetComponent<RectTransform>().pivot = new Vector2(0, 1);
             var shallowB = PanelBtn(cavePanel, 0, "浅层洞穴", new Color(0.5f, 0.35f, 0.2f));
-            var midB = PanelBtn(cavePanel, 1, "中层 🔒$500", new Color(0.35f, 0.35f, 0.4f));
-            var deepB = PanelBtn(cavePanel, 2, "深层 🔒$2000", new Color(0.4f, 0.15f, 0.12f));
+            var midB = PanelBtn(cavePanel, 1, "中层 🔒$50", new Color(0.35f, 0.35f, 0.4f));
+            var deepB = PanelBtn(cavePanel, 2, "深层 🔒$100", new Color(0.4f, 0.15f, 0.12f));
             foreach (var b in new[] { shallowB, midB, deepB })
                 b.GetComponent<RectTransform>().sizeDelta = new Vector2(420, 150);
             var caveUI = cavePanel.AddComponent<CaveEntryUI>();

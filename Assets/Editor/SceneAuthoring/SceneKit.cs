@@ -166,7 +166,7 @@ namespace MinersWatch.Editor
             slotTpl.transform.SetParent(invBar.transform, false);
             slotTpl.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 100);
             slotTpl.GetComponent<Image>().color = new Color(1, 1, 1, 0.9f);
-            var slotTxt = Label("Count", "0", slotTpl.transform, new Vector2(1, 0), new Vector2(-8, 8), new Vector2(60, 44), 36, Color.black);
+            var slotTxt = Label("Count", "0", slotTpl.transform, new Vector2(1, 0), new Vector2(-8, 8), new Vector2(60, 44), 36, Color.white);
             slotTxt.GetComponent<Text>().alignment = TextAnchor.LowerRight;
             slotTpl.SetActive(false);
 

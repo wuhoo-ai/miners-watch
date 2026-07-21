@@ -23,6 +23,12 @@ namespace MinersWatch
         [SerializeField] private Button _buySpikeTrapButton;
         [SerializeField] private Button _buyTurretButton;
 
+        [Header("Button Labels (for level updates)")]
+        [SerializeField] private Text _sellAllLabel;
+        [SerializeField] private Text _pickaxeLabel;
+        [SerializeField] private Text _armorLabel;
+        [SerializeField] private Text _backpackLabel;
+
         public void Init(ShopSystem shop)
         {
             _shop = shop;
@@ -63,24 +69,73 @@ namespace MinersWatch
 
         private void OnSellAll()
         {
-            _shop?.SellAllMinerals();
+            int earned = _shop?.SellAllMinerals() ?? 0;
+            Debug.Log($"[ShopUI] Sold all minerals — earned ${earned}");
+            RefreshDisplay();
         }
 
         private void OnBuyUpgrade(UpgradeType type)
         {
-            _shop?.BuyUpgrade(type);
+            bool ok = _shop?.BuyUpgrade(type) ?? false;
+            Debug.Log($"[ShopUI] Buy {type}: {(ok ? "OK" : "FAILED (gold/level)")}");
+            RefreshDisplay();
         }
 
         private void OnBuyDefense(DefenseType type)
         {
-            _shop?.BuyDefense(type);
+            bool ok = _shop?.BuyDefense(type) ?? false;
+            Debug.Log($"[ShopUI] Buy {type}: {(ok ? "OK" : "FAILED (gold/iron)")}");
+            RefreshDisplay();
         }
 
         public void RefreshDisplay()
         {
             if (_shop == null) return;
+
             if (_goldText != null)
-                _goldText.text = $"Gold: {_shop.Upgrades?.Gold ?? 0}";
+            {
+                int gold = _shop.Upgrades?.Gold ?? 0;
+                _goldText.text = $"${gold}";
+            }
+
+            // Update upgrade button labels with levels + costs
+            if (_pickaxeLabel != null && _shop.Upgrades != null)
+            {
+                int level = _shop.Upgrades.GetLevel(UpgradeType.Pickaxe);
+                int cost = _shop.Upgrades.GetUpgradeCost(UpgradeType.Pickaxe);
+                _pickaxeLabel.text = level >= 3 ? "镐 Lv.MAX" : $"镐 Lv.{level}→{level+1} ${cost}";
+                if (_buyPickaxeButton != null)
+                    _buyPickaxeButton.interactable = cost > 0 && _shop.Upgrades.Gold >= cost;
+            }
+
+            if (_armorLabel != null && _shop.Upgrades != null)
+            {
+                int level = _shop.Upgrades.GetLevel(UpgradeType.Armor);
+                int cost = _shop.Upgrades.GetUpgradeCost(UpgradeType.Armor);
+                _armorLabel.text = level >= 3 ? "甲 Lv.MAX" : $"甲 Lv.{level}→{level+1} ${cost}";
+                if (_buyArmorButton != null)
+                    _buyArmorButton.interactable = cost > 0 && _shop.Upgrades.Gold >= cost;
+            }
+
+            if (_backpackLabel != null && _shop.Upgrades != null)
+            {
+                int level = _shop.Upgrades.GetLevel(UpgradeType.Backpack);
+                int cost = _shop.Upgrades.GetUpgradeCost(UpgradeType.Backpack);
+                _backpackLabel.text = level >= 3 ? "包 Lv.MAX" : $"包 Lv.{level}→{level+1} ${cost}";
+                if (_buyBackpackButton != null)
+                    _buyBackpackButton.interactable = cost > 0 && _shop.Upgrades.Gold >= cost;
+            }
+
+            // Update defense button affordability
+            UpdateDefenseButton(_buyWallButton, DefenseType.Wall);
+            UpdateDefenseButton(_buySpikeTrapButton, DefenseType.SpikeTrap);
+            UpdateDefenseButton(_buyTurretButton, DefenseType.Turret);
+        }
+
+        private void UpdateDefenseButton(Button btn, DefenseType type)
+        {
+            if (btn == null || _shop == null) return;
+            btn.interactable = _shop.CanAffordDefense(type);
         }
     }
 }

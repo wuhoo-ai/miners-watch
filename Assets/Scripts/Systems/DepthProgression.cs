@@ -10,8 +10,8 @@ namespace MinersWatch
     public class DepthProgression : MonoBehaviour
     {
         [Header("Unlock Thresholds")]
-        [SerializeField] private int _midUnlockGold = 500;
-        [SerializeField] private int _deepUnlockGold = 2000;
+        [SerializeField] private int _midUnlockGold = 50;
+        [SerializeField] private int _deepUnlockGold = 100;
 
         private int _accumulatedGold;
         private DepthLevel _currentDepth = DepthLevel.Shallow;
@@ -27,8 +27,8 @@ namespace MinersWatch
         {
             _accumulatedGold = 0;
             _currentDepth = DepthLevel.Shallow;
-            if (_midUnlockGold <= 0) _midUnlockGold = 500;
-            if (_deepUnlockGold <= 0) _deepUnlockGold = 2000;
+            if (_midUnlockGold <= 0) _midUnlockGold = 50;
+            if (_deepUnlockGold <= 0) _deepUnlockGold = 100;
         }
 
         private void Awake() => Init();

@@ -68,6 +68,7 @@ namespace MinersWatch
             if (total > 0)
                 _upgrades.AddGold(total);
 
+            AudioManager.SFX("sfx_sell"); // cash register!
             return total;
         }
 

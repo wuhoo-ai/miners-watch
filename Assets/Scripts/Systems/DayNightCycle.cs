@@ -53,7 +53,7 @@ namespace MinersWatch
         private void Update() => Tick(Time.deltaTime);
 
         /// <summary>Advance the cycle by dt seconds. Testable entry point.</summary>
-        public void ResetToDayStart() { _elapsed = 0f; _currentPhase = DayNightPhase.Day; }
+        public void ResetToDayStart() { _elapsed = 0f; _phase = DayNightPhase.Day; _warningFired = false; }
 
         public void Tick(float dt)
         {

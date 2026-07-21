@@ -23,6 +23,8 @@ namespace MinersWatch
         {
             Debug.Log("[BackToMenu] Returning to MainMenu");
 
+            GameRoot.AutoSave(); // save progress before leaving game
+
             // Unload whichever game scene this button lives in (additively loaded on top of MainMenu)
             var ownScene = gameObject.scene;
             if (ownScene.isLoaded && ownScene.name != "MainMenu")
