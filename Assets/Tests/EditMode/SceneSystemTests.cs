@@ -113,7 +113,7 @@ namespace MinersWatch.Tests.EditMode
             _dp.SetDepth(DepthLevel.Medium); // locked — should not change
             Assert.AreEqual(DepthLevel.Shallow, _dp.CurrentDepth);
 
-            _dp.AddEarnings(500);
+            _dp.AddEarnings(50);
             _dp.SetDepth(DepthLevel.Medium);
             Assert.AreEqual(DepthLevel.Medium, _dp.CurrentDepth);
         }
