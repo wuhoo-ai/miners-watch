@@ -79,7 +79,19 @@ namespace MinersWatch
 
         private void Update()
         {
-            if (_colorAdjustments == null) return;
+            // Lazy-find global Volume (it lives in Surface/Cave scenes, loaded additively)
+            if (_globalVolume == null)
+            {
+                _globalVolume = FindObjectOfType<Volume>();
+                if (_globalVolume != null && _globalVolume.profile != null)
+                {
+                    _globalVolume.profile.TryGet(out _bloom);
+                    _globalVolume.profile.TryGet(out _vignette);
+                    _globalVolume.profile.TryGet(out _colorAdjustments);
+                    ApplyImmediate();
+                }
+                else return; // no volume yet, try again next frame
+            }
 
             float t = Time.deltaTime * _transitionSpeed;
 
