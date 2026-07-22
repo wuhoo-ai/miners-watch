@@ -102,6 +102,17 @@ namespace MinersWatch.Editor
             Wire(pc, ("groundCheckPoint", gc.transform));
             SetFloats(pc, ("minX", -8.5f), ("maxX", 8.5f));
 
+            // Wire attack animation sprites
+            var pcSo = new SerializedObject(pc);
+            var attackSpritesProp = pcSo.FindProperty("_attackSprites");
+            attackSpritesProp.arraySize = 4;
+            for (int i = 0; i < 4; i++)
+            {
+                var elem = attackSpritesProp.GetArrayElementAtIndex(i);
+                elem.objectReferenceValue = S($"Assets/Sprites/Character/player_attack_0{i + 1}.png");
+            }
+            pcSo.ApplyModifiedPropertiesWithoutUndo();
+
             p.AddComponent<StaminaSystem>();
             p.AddComponent<PlayerHP>(); // _upgrades resolves from GameRoot at runtime
             p.AddComponent<WeaponSystem>(); // melee attack

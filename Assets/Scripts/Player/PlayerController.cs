@@ -26,9 +26,18 @@ namespace MinersWatch
         private Animator animator;
         private PlayerControls controls;
         private WeaponSystem _weapon;
+        private SpriteRenderer _spriteRenderer;
         private bool isGrounded;
 
         private Vector2 moveInput;
+
+        // Attack animation
+        [Header("Attack Animation")]
+        [SerializeField] private Sprite[] _attackSprites;
+        [SerializeField] private float _attackFrameDuration = 0.08f;
+        private Sprite _idleSprite;
+        private Coroutine _attackRoutine;
+        private bool _isAttacking;
 
         private void Awake()
         {
@@ -36,6 +45,8 @@ namespace MinersWatch
             stamina = GetComponent<StaminaSystem>() ?? gameObject.AddComponent<StaminaSystem>();
             animator = GetComponent<Animator>();
             _weapon = GetComponent<WeaponSystem>();
+            _spriteRenderer = GetComponent<SpriteRenderer>();
+            if (_spriteRenderer != null) _idleSprite = _spriteRenderer.sprite;
             controls = new PlayerControls();
 
             // Rigidbody2D defaults
@@ -98,7 +109,10 @@ namespace MinersWatch
             if (TouchInput.ConsumeJump())
                 TryJump();
             if (TouchInput.ConsumeAttack() && _weapon != null)
-                _weapon.TryAttack();
+            {
+                if (_weapon.TryAttack() && !_isAttacking)
+                    PlayAttackAnimation();
+            }
         }
 
         private void FixedUpdate()
@@ -140,6 +154,31 @@ namespace MinersWatch
             {
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             }
+        }
+
+        private void PlayAttackAnimation()
+        {
+            if (_spriteRenderer == null || _attackSprites == null || _attackSprites.Length == 0) return;
+            _attackRoutine = StartCoroutine(AttackRoutine());
+        }
+
+        private System.Collections.IEnumerator AttackRoutine()
+        {
+            _isAttacking = true;
+
+            // Play each attack frame
+            foreach (var frame in _attackSprites)
+            {
+                if (frame != null)
+                    _spriteRenderer.sprite = frame;
+                yield return new WaitForSeconds(_attackFrameDuration);
+            }
+
+            // Restore idle sprite
+            if (_idleSprite != null)
+                _spriteRenderer.sprite = _idleSprite;
+
+            _isAttacking = false;
         }
 
 #if UNITY_EDITOR

@@ -35,6 +35,7 @@ namespace MinersWatch
             go.AddComponent<WaveManager>();
             go.AddComponent<EnemySpawner>();
             go.AddComponent<AudioManager>();
+            go.AddComponent<DayNightPostProcess>();
             return _instance;
         }
 

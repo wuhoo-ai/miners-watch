@@ -5,6 +5,7 @@ on:
     branches: [main, v1.1-dev]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -51,7 +52,7 @@ jobs:
   build-android-debug:
     name: Build Android (Debug)
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/v1.1-dev'
+    if: github.ref == 'refs/heads/v1.1-dev' && github.event_name == 'workflow_dispatch'
 
     steps:
       - name: Checkout
