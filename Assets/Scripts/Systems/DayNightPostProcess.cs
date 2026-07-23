@@ -50,7 +50,7 @@ namespace MinersWatch
                 _cycle.OnPhaseChanged += OnPhaseChanged;
 
             if (_globalVolume == null)
-                _globalVolume = FindObjectOfType<Volume>();
+                _globalVolume = FindAnyObjectByType<Volume>();
 
             if (_globalVolume != null && _globalVolume.profile != null)
             {
@@ -82,7 +82,7 @@ namespace MinersWatch
             // Lazy-find global Volume (it lives in Surface/Cave scenes, loaded additively)
             if (_globalVolume == null)
             {
-                _globalVolume = FindObjectOfType<Volume>();
+                _globalVolume = FindAnyObjectByType<Volume>();
                 if (_globalVolume != null && _globalVolume.profile != null)
                 {
                     _globalVolume.profile.TryGet(out _bloom);

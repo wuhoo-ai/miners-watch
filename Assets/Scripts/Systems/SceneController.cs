@@ -83,7 +83,7 @@ namespace MinersWatch
                 return;
             }
             // If we're already on MainMenu, just show it
-            var menuUI = FindObjectOfType<MainMenuUI>();
+            var menuUI = FindAnyObjectByType<MainMenuUI>();
             if (menuUI != null) menuUI.Show();
         }
 
@@ -164,7 +164,7 @@ namespace MinersWatch
             _currentScene = null;
 
             // Show main menu UI
-            var menuUI = FindObjectOfType<MainMenuUI>();
+            var menuUI = FindAnyObjectByType<MainMenuUI>();
             if (menuUI != null) menuUI.Show();
 
             // Fade in

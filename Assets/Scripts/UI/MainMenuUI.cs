@@ -33,9 +33,9 @@ namespace MinersWatch
         private void Awake()
         {
             if (_saveSystem == null)
-                _saveSystem = GetComponent<SaveSystem>() ?? FindObjectOfType<SaveSystem>();
+                _saveSystem = GetComponent<SaveSystem>() ?? FindAnyObjectByType<SaveSystem>();
             if (_sceneController == null)
-                _sceneController = FindObjectOfType<SceneController>();
+                _sceneController = FindAnyObjectByType<SceneController>();
             WireButtons();
             RefreshButtons();
         }

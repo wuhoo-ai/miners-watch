@@ -15,7 +15,7 @@ namespace MinersWatch
         private void Awake()
         {
             if (_sceneController == null)
-                _sceneController = FindObjectOfType<SceneController>();
+                _sceneController = FindAnyObjectByType<SceneController>();
             WireButtons();
         }
 

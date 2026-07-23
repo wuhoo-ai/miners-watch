@@ -24,7 +24,7 @@ namespace MinersWatch
 
         private void Awake()
         {
-            _audio = AudioManager.Instance ?? FindObjectOfType<AudioManager>();
+            _audio = AudioManager.Instance ?? FindAnyObjectByType<AudioManager>();
             WireSliders();
             LoadAndApply();
             UpdateLabels();

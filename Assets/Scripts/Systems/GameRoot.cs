@@ -19,7 +19,7 @@ namespace MinersWatch
         public static GameRoot EnsureExists()
         {
             if (_instance != null) return _instance;
-            _instance = FindObjectOfType<GameRoot>();
+            _instance = FindAnyObjectByType<GameRoot>();
             if (_instance != null) return _instance;
 
             var go = new GameObject("GameRoot");

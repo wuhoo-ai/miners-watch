@@ -22,8 +22,8 @@ namespace MinersWatch
 
         private void Awake()
         {
-            _progression = GameRoot.Get<DepthProgression>() ?? FindObjectOfType<DepthProgression>();
-            _scenes = GameRoot.Get<SceneController>() ?? FindObjectOfType<SceneController>();
+            _progression = GameRoot.Get<DepthProgression>() ?? FindAnyObjectByType<DepthProgression>();
+            _scenes = GameRoot.Get<SceneController>() ?? FindAnyObjectByType<SceneController>();
 
             if (_shallowButton != null) _shallowButton.onClick.AddListener(() => Enter(DepthLevel.Shallow));
             if (_midButton != null) _midButton.onClick.AddListener(() => Enter(DepthLevel.Medium));

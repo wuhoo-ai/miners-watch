@@ -14,7 +14,7 @@ namespace MinersWatch
 
         private void OnClicked()
         {
-            var scenes = GameRoot.Get<SceneController>() ?? FindObjectOfType<SceneController>();
+            var scenes = GameRoot.Get<SceneController>() ?? FindAnyObjectByType<SceneController>();
             if (scenes != null) scenes.LoadSurface();
             else Debug.LogWarning("[ReturnToSurface] no SceneController found");
         }
