@@ -301,7 +301,6 @@ namespace MinersWatch
             shape.radius = 0.6f;
             shape.donutRadius = 0.05f;
             shape.arc = 120f; // arc sweep
-            shape.arcMode = ParticleSystemShapeArcMode.Random;
 
             var colorOverLifetime = ps.colorOverLifetime;
             colorOverLifetime.enabled = true;
