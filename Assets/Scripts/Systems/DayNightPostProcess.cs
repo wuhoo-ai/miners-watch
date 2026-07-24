@@ -96,12 +96,12 @@ namespace MinersWatch
             float t = Time.deltaTime * _transitionSpeed;
 
             // Smooth color filter transition (day=white, night=cool blue)
-            if (_colorAdjustments.colorFilter.overrideState)
+            if (_colorAdjustments != null && _colorAdjustments.colorFilter.overrideState)
                 _colorAdjustments.colorFilter.value = Color.Lerp(
                     _colorAdjustments.colorFilter.value, _targetFilter, t);
 
             // Smooth exposure transition (night = slightly darker)
-            if (_colorAdjustments.postExposure.overrideState)
+            if (_colorAdjustments != null && _colorAdjustments.postExposure.overrideState)
                 _colorAdjustments.postExposure.value = Mathf.Lerp(
                     _colorAdjustments.postExposure.value, _targetExposure, t);
 

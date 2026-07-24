@@ -45,6 +45,8 @@ namespace MinersWatch
             _currentWave = 0;
             _waveTimer = 0f;
             _nightActive = false;
+            // Deep cave gets an extra boss wave (Guardian at index 3)
+            _wavesPerNight = depth == DepthLevel.Deep ? 4 : 3;
         }
 
         public void StartNight()
@@ -95,8 +97,8 @@ namespace MinersWatch
                 {
                     0 => new WaveConfig { waveNumber = 1, enemyCount = 3, enemyType = EnemyType.Shadow },
                     1 => new WaveConfig { waveNumber = 2, enemyCount = 4, enemyType = EnemyType.Lavabeast },
-                    3 => new WaveConfig { waveNumber = 3, enemyCount = 3, enemyType = EnemyType.Lavabeast },
-                    4 => new WaveConfig { waveNumber = 5, enemyCount = 1, enemyType = EnemyType.Guardian },
+                    2 => new WaveConfig { waveNumber = 3, enemyCount = 3, enemyType = EnemyType.Lavabeast },
+                    3 => new WaveConfig { waveNumber = 4, enemyCount = 1, enemyType = EnemyType.Guardian },
                     _ => new WaveConfig { waveNumber = 3, enemyCount = 3, enemyType = EnemyType.Lavabeast },
                 },
                 _ => new WaveConfig { waveNumber = 1, enemyCount = 3, enemyType = EnemyType.Rockworm },

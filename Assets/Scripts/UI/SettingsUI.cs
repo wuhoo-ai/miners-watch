@@ -30,7 +30,7 @@ namespace MinersWatch
             UpdateLabels();
 
             if (_versionLabel != null)
-                _versionLabel.text = $"矿工守夜 v1.1\nHermes Agent · 2026";
+                _versionLabel.text = $"矿工守夜 v1.2\nHermes Agent · 2026";
         }
 
         private void WireSliders()

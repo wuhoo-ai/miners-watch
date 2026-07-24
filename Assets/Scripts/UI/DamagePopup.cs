@@ -19,6 +19,7 @@ namespace MinersWatch
         private Canvas _canvas;
         private Camera _cam;
         private float _elapsed;
+        private static Font _cachedFont;
 
         public static DamagePopup Instance { get; private set; }
 
@@ -47,8 +48,10 @@ namespace MinersWatch
             _text.color = color;
             _text.fontSize = color == Color.red ? 42 : 36;
             _text.fontStyle = FontStyle.Bold;
-            _text.font = Font.CreateDynamicFontFromOSFont("Arial", 14)
-                       ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (_cachedFont == null)
+                _cachedFont = Font.CreateDynamicFontFromOSFont("Arial", 14)
+                           ?? Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _text.font = _cachedFont;
 
             gameObject.SetActive(true);
             Vector3 screenPos = _cam != null ? _cam.WorldToScreenPoint(worldPos) : worldPos;
