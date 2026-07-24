@@ -19,6 +19,12 @@ jobs:
           - Android
 
     steps:
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force || true
+          df -h /
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -55,6 +61,12 @@ jobs:
     if: github.ref == 'refs/heads/v1.1-dev' && github.event_name == 'workflow_dispatch'
 
     steps:
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force || true
+          df -h /
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
