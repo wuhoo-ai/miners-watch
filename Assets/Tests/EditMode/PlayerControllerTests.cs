@@ -52,7 +52,7 @@ namespace Tests.EditMode
         public void JumpBuffer_WhenPressed_BuffersInput()
         {
             // Act - press jump while airborne
-            _player.TryJumpTest(0.02f, grounded: false);
+            _player.TryJumpTest(0.02f, grounded: false, jumpPressed: true);
 
             // Assert - buffer timer should be set
             Assert.Greater(_player.JumpBufferTimer, 0f);
@@ -79,8 +79,8 @@ namespace Tests.EditMode
             _player.TryJumpTest(0.02f, grounded: true);
             Assert.IsTrue(_player.IsGrounded);
 
-            // Act - jump immediately
-            bool jumped = _player.TryJumpTest(0.02f, grounded: true);
+            // Act - jump immediately (press jump while grounded)
+            bool jumped = _player.TryJumpTest(0.02f, grounded: true, jumpPressed: true);
 
             // Assert
             Assert.IsTrue(jumped);
@@ -104,7 +104,7 @@ namespace Tests.EditMode
         public void TryJumpTest_BufferedJump_ExecutesWhenGrounded()
         {
             // Arrange - airborne, press jump early
-            _player.TryJumpTest(0.02f, grounded: false);
+            _player.TryJumpTest(0.02f, grounded: false, jumpPressed: true);
             Assert.Greater(_player.JumpBufferTimer, 0f);
 
             // Act - land while buffer is active

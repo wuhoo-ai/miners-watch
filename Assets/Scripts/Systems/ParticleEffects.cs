@@ -46,7 +46,7 @@ namespace MinersWatch
 
             var go = new GameObject("[ParticleEffects]");
             _instance = go.AddComponent<ParticleEffects>();
-            DontDestroyOnLoad(go);
+            if (Application.isPlaying) DontDestroyOnLoad(go);
             return _instance;
         }
 

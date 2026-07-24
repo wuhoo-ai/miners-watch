@@ -51,9 +51,10 @@ namespace MinersWatch
         public float JumpBufferTimer => _jumpBufferTimer;
 
         /// <summary>Test-friendly jump attempt with explicit timers.</summary>
-        public bool TryJumpTest(float dt, bool grounded)
+        public bool TryJumpTest(float dt, bool grounded, bool jumpPressed = false)
         {
             isGrounded = grounded; // Mirror grounded state for test assertions
+            if (jumpPressed) _jumpBufferTimer = jumpBufferTime;
             UpdateJumpTimers(dt, grounded);
             return ExecuteJumpIfBuffered();
         }

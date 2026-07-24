@@ -24,13 +24,13 @@ namespace MinersWatch.Tests.EditMode
             // Init explicitly — avoids relying on Awake() in batch mode
             _animator.Init(_renderer, defaultFrameRate: 10f);
 
-            // Create test sprites
+            // Create test sprites (whiteTexture is 4x4)
             _frames = new Sprite[4];
             for (int i = 0; i < 4; i++)
             {
                 _frames[i] = Sprite.Create(
                     Texture2D.whiteTexture,
-                    new Rect(0, 0, 16, 16),
+                    new Rect(0, 0, 4, 4),
                     Vector2.zero);
             }
         }
