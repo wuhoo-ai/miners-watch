@@ -69,11 +69,19 @@ namespace MinersWatch
 
         private void Update() => Tick(Time.deltaTime);
 
+        private bool _deathEffectPlayed;
+
         /// <summary>Advance AI by dt seconds. Testable entry point.</summary>
         public void Tick(float dt)
         {
             if (_enemy == null || _enemy.IsDead)
             {
+                if (_state != EnemyState.Dead && _enemy != null)
+                {
+                    // Death transition — play death particle effect once
+                    ParticleEffects.PlayDeathEffect(transform.position);
+                    _deathEffectPlayed = true;
+                }
                 _state = EnemyState.Dead;
                 return;
             }

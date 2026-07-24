@@ -53,5 +53,12 @@ namespace MinersWatch
             if (damage <= 0 || IsDead) return;
             _currentHP = Mathf.Max(0, _currentHP - damage);
         }
+
+        /// <summary>Heal HP, clamped to MaxHP.</summary>
+        public void Heal(int amount)
+        {
+            if (amount <= 0 || IsDead) return;
+            _currentHP = Mathf.Min(_maxHP, _currentHP + amount);
+        }
     }
 }

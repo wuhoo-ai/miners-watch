@@ -122,6 +122,11 @@ namespace MinersWatch
                 // Miss — show a small "whoosh" indicator
                 DamagePopup.Show(origin + dir * _attackRange, "", new Color(0.6f, 0.6f, 0.6f, 0f));
             }
+            else
+            {
+                // Hit — play attack slash particle effect at first hit position
+                ParticleEffects.PlayAttackEffect(hits[0].transform.position);
+            }
 
             AudioManager.SFX("sfx_enemy_hit_01");
             ScreenShake.Trigger(0.08f, 0.3f);

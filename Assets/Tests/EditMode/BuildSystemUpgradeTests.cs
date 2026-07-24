@@ -21,7 +21,6 @@ namespace MinersWatch.Tests
             var upgrades = shopGo.AddComponent<UpgradeSystem>();
             upgrades.Init();
             upgrades.AddGold(1000); // Plenty of gold for testing
-            _shop.Init(null, upgrades);
 
             var invGo = new GameObject("TestInventory");
             _inventory = invGo.AddComponent<InventorySystem>();
@@ -29,6 +28,8 @@ namespace MinersWatch.Tests
             _inventory.SetCapacity(10);
             _inventory.AddItem(MineralType.Iron, 15f, 50);
             _inventory.AddItem(MineralType.Stone, 5f, 50);
+
+            _shop.Init(_inventory, upgrades);
 
             var buildGo = new GameObject("TestBuild");
             _build = buildGo.AddComponent<BuildSystem>();

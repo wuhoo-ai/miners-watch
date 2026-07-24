@@ -25,6 +25,7 @@ namespace MinersWatch
         public List<InventoryEntry> inventory;
         public bool[] defenseGrid;
         public int waveProgress;
+        public List<string> unlockedAchievements;
 
         public static SaveData CreateDefault() => new SaveData
         {
@@ -40,6 +41,7 @@ namespace MinersWatch
             inventory = new List<InventoryEntry>(),
             defenseGrid = new bool[15],
             waveProgress = 0,
+            unlockedAchievements = new List<string>(),
         };
 
         public int GetUpgradeLevel(string key) =>

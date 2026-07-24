@@ -15,6 +15,9 @@ namespace MinersWatch
         public IReadOnlyList<RecipeDef> Recipes => _recipes;
         public InventorySystem Inventory => _inventory;
 
+        /// <summary>Fires after a successful craft with the recipe that was crafted.</summary>
+        public event System.Action<RecipeDef> OnCraftCompleted;
+
         /// <summary>Explicit init for EditMode tests where Awake may not fire.</summary>
         public void Init(InventorySystem inventory, RecipeDef[] recipes = null)
         {
@@ -83,6 +86,7 @@ namespace MinersWatch
                 }
             }
 
+            OnCraftCompleted?.Invoke(recipe);
             return true;
         }
 

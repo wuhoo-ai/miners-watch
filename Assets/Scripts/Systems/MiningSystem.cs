@@ -49,6 +49,7 @@ namespace MinersWatch
             Inventory?.AddItem(data.mineralType, data.sellPrice, 1);
             OnMineralMined?.Invoke(data.mineralType);
             AudioManager.SFX("sfx_mine_01"); // play mining SFX
+            ParticleEffects.PlayMiningEffect(node.transform.position); // mining spark FX
 #if UNITY_EDITOR
             DestroyImmediate(node.gameObject);
 #else

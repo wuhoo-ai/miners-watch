@@ -92,17 +92,19 @@ namespace MinersWatch
         {
             if (dt <= 0f) return;
 
+            // Snapshot keys to avoid collection-modified-during-enumeration
+            var keys = new List<ConsumableType>(_activeEffects.Keys);
             var expired = new List<ConsumableType>();
-            foreach (var kvp in _activeEffects)
+            foreach (var key in keys)
             {
-                float remaining = kvp.Value - dt;
+                float remaining = _activeEffects[key] - dt;
                 if (remaining <= 0f)
                 {
-                    expired.Add(kvp.Key);
+                    expired.Add(key);
                 }
                 else
                 {
-                    _activeEffects[kvp.Key] = remaining;
+                    _activeEffects[key] = remaining;
                 }
             }
 

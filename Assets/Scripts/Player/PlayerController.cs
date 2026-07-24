@@ -29,6 +29,7 @@ namespace MinersWatch
         private PlayerControls controls;
         private WeaponSystem _weapon;
         private SpriteRenderer _spriteRenderer;
+        private SpriteAnimator _spriteAnimator;
         private bool isGrounded;
 
         private Vector2 moveInput;
@@ -38,12 +39,11 @@ namespace MinersWatch
         private float _jumpBufferTimer;
         private bool _wasGrounded;
 
-        // Attack animation
+        // Attack animation (driven by SpriteAnimator)
         [Header("Attack Animation")]
         [SerializeField] private Sprite[] _attackSprites;
-        [SerializeField] private float _attackFrameDuration = 0.08f;
+        [SerializeField] private float _attackFrameRate = 12f;
         private Sprite _idleSprite;
-        private Coroutine _attackRoutine;
         private bool _isAttacking;
 
         public bool IsGrounded => isGrounded;
@@ -53,6 +53,7 @@ namespace MinersWatch
         /// <summary>Test-friendly jump attempt with explicit timers.</summary>
         public bool TryJumpTest(float dt, bool grounded)
         {
+            isGrounded = grounded; // Mirror grounded state for test assertions
             UpdateJumpTimers(dt, grounded);
             return ExecuteJumpIfBuffered();
         }
@@ -65,6 +66,10 @@ namespace MinersWatch
             _weapon = GetComponent<WeaponSystem>();
             _spriteRenderer = GetComponent<SpriteRenderer>();
             if (_spriteRenderer != null) _idleSprite = _spriteRenderer.sprite;
+            _spriteAnimator = GetComponent<SpriteAnimator>();
+            if (_spriteAnimator == null)
+                _spriteAnimator = gameObject.AddComponent<SpriteAnimator>();
+            _spriteAnimator.OnAnimationComplete += OnAttackAnimComplete;
             controls = new PlayerControls();
 
             // Rigidbody2D defaults
@@ -216,27 +221,18 @@ namespace MinersWatch
 
         private void PlayAttackAnimation()
         {
-            if (_spriteRenderer == null || _attackSprites == null || _attackSprites.Length == 0) return;
-            _attackRoutine = StartCoroutine(AttackRoutine());
+            if (_spriteAnimator == null || _attackSprites == null || _attackSprites.Length == 0) return;
+            _isAttacking = true;
+            _spriteAnimator.Play("attack", _attackSprites, loop: false, frameRate: _attackFrameRate);
         }
 
-        private System.Collections.IEnumerator AttackRoutine()
+        private void OnAttackAnimComplete(string state)
         {
-            _isAttacking = true;
-
-            // Play each attack frame
-            foreach (var frame in _attackSprites)
-            {
-                if (frame != null)
-                    _spriteRenderer.sprite = frame;
-                yield return new WaitForSeconds(_attackFrameDuration);
-            }
-
-            // Restore idle sprite
-            if (_idleSprite != null)
-                _spriteRenderer.sprite = _idleSprite;
-
+            if (state != "attack") return;
             _isAttacking = false;
+            // Restore idle sprite
+            if (_spriteRenderer != null && _idleSprite != null)
+                _spriteRenderer.sprite = _idleSprite;
         }
 
 #if UNITY_EDITOR

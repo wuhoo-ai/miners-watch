@@ -194,7 +194,7 @@ namespace MinersWatch
         {
             if (_inventory == null) return false;
             if (_shop == null) return false;
-            if (def.costGold > 0 && _shop.Upgrades.Gold < def.costGold) return false;
+            if (def.costGold > 0 && _shop.Upgrades != null && _shop.Upgrades.Gold < def.costGold) return false;
             if (def.costIron > 0 && !_inventory.HasItem(MineralType.Iron, def.costIron)) return false;
             if (def.costStone > 0 && !_inventory.HasItem(MineralType.Stone, def.costStone)) return false;
             return true;
@@ -203,7 +203,7 @@ namespace MinersWatch
         private bool DeductUpgradeMaterials(BuildLevelDef def)
         {
             if (_shop == null) return false;
-            if (def.costGold > 0)
+            if (def.costGold > 0 && _shop.Upgrades != null)
             {
                 if (_shop.Upgrades.Gold < def.costGold) return false;
                 _shop.Upgrades.AddGold(-def.costGold);
