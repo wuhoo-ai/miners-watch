@@ -7,7 +7,7 @@
         "Unity.TextMeshPro",
         "Unity.RenderPipelines.Core.Runtime",
         "Unity.RenderPipelines.Universal.Runtime",
-        "UnityEngine.ParticleSystemModule"
+        "com.unity.modules.particlesystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
