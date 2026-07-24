@@ -147,13 +147,11 @@ namespace Tests.EditMode
         public void Play_ReusesReturnedInstance()
         {
             var ps1 = ParticleEffects.Play(ParticleEffects.EffectType.MiningSpark, Vector3.zero);
-            int id1 = ps1.GetInstanceID();
             _fx.ReturnToPool(ps1);
 
             var ps2 = ParticleEffects.Play(ParticleEffects.EffectType.MiningSpark, Vector3.one);
-            int id2 = ps2.GetInstanceID();
 
-            Assert.AreEqual(id1, id2, "Pool should reuse the same ParticleSystem instance");
+            Assert.AreSame(ps1, ps2, "Pool should reuse the same ParticleSystem instance");
         }
 
         [Test]
@@ -192,23 +190,22 @@ namespace Tests.EditMode
         [Test]
         public void StaticAPI_PlayMiningEffect_Works()
         {
-            var ps = ParticleEffects.PlayMiningEffect(new Vector3(1f, 2f, 0f));
-            Assert.IsNotNull(ps);
+            ParticleEffects.PlayMiningEffect(new Vector3(1f, 2f, 0f));
             Assert.AreEqual(1, _fx.ActiveCount);
         }
 
         [Test]
         public void StaticAPI_PlayAttackEffect_Works()
         {
-            var ps = ParticleEffects.PlayAttackEffect(Vector3.zero);
-            Assert.IsNotNull(ps);
+            ParticleEffects.PlayAttackEffect(Vector3.zero);
+            Assert.AreEqual(1, _fx.ActiveCount);
         }
 
         [Test]
         public void StaticAPI_PlayDeathEffect_Works()
         {
-            var ps = ParticleEffects.PlayDeathEffect(Vector3.zero);
-            Assert.IsNotNull(ps);
+            ParticleEffects.PlayDeathEffect(Vector3.zero);
+            Assert.AreEqual(1, _fx.ActiveCount);
         }
 
         // ─── ParticleSystem Configuration ──────────────────────────────────
