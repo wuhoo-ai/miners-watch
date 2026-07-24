@@ -5,6 +5,7 @@ namespace MinersWatch
     /// <summary>
     /// Simple melee weapon system. Spawns a short-lived hitbox in front of the player.
     /// Attack input comes from TouchInput (mobile) or keyboard (E key).
+    /// Combo system: consecutive attacks within combo window increase damage.
     /// </summary>
     public class WeaponSystem : MonoBehaviour
     {
@@ -14,14 +15,52 @@ namespace MinersWatch
         [SerializeField] private int _baseDamage = 10;
         [SerializeField] private LayerMask _enemyLayer = -1;
 
+        [Header("Combo")]
+        [SerializeField] private float _comboWindow = 0.8f;
+        [SerializeField] private int _maxCombo = 3;
+        [SerializeField] private float _comboDamageMultiplier = 0.2f;
+
         [Header("References")]
         [SerializeField] private Transform _attackOrigin;
 
         private float _lastAttackTime = -99f;
         private UpgradeSystem _upgrades;
-        private int _attackCount;
+        private int _comboCount;
+        private float _comboTimer;
 
-        public int ComboCount => _attackCount;
+        public int ComboCount => _comboCount;
+        public float ComboTimer => _comboTimer;
+        public float ComboDamageMultiplier => GetComboMultiplier();
+
+        /// <summary>Test-friendly attack with explicit time.</summary>
+        public bool TryAttackTest(float currentTime)
+        {
+            if (currentTime - _lastAttackTime < _attackCooldown) return false;
+
+            // Update combo
+            if (currentTime - _lastAttackTime <= _comboWindow)
+            {
+                _comboCount = Mathf.Min(_comboCount + 1, _maxCombo);
+            }
+            else
+            {
+                _comboCount = 1;
+            }
+
+            _lastAttackTime = currentTime;
+            _comboTimer = _comboWindow;
+            return true;
+        }
+
+        /// <summary>Test-friendly combo timer update.</summary>
+        public void UpdateComboTest(float deltaTime)
+        {
+            _comboTimer -= deltaTime;
+            if (_comboTimer <= 0f)
+            {
+                _comboCount = 0;
+            }
+        }
 
         private void Awake()
         {
@@ -29,12 +68,36 @@ namespace MinersWatch
             _upgrades = GetComponentInParent<UpgradeSystem>() ?? GameRoot.Get<UpgradeSystem>();
         }
 
+        private void Update()
+        {
+            // Decay combo timer
+            if (_comboTimer > 0f)
+            {
+                _comboTimer -= Time.deltaTime;
+                if (_comboTimer <= 0f)
+                {
+                    _comboCount = 0;
+                }
+            }
+        }
+
         /// <summary>Try to attack. Returns true if an attack was executed.</summary>
         public bool TryAttack()
         {
             if (Time.time - _lastAttackTime < _attackCooldown) return false;
+
+            // Update combo
+            if (Time.time - _lastAttackTime <= _comboWindow)
+            {
+                _comboCount = Mathf.Min(_comboCount + 1, _maxCombo);
+            }
+            else
+            {
+                _comboCount = 1;
+            }
+
             _lastAttackTime = Time.time;
-            _attackCount++;
+            _comboTimer = _comboWindow;
 
             int dmg = GetDamage();
             Vector2 origin = _attackOrigin.position;
@@ -68,12 +131,22 @@ namespace MinersWatch
         private int GetDamage()
         {
             int level = _upgrades?.GetLevel(UpgradeType.Pickaxe) ?? 1;
-            return level switch
+            int baseDmg = level switch
             {
                 2 => 15,
                 3 => 22,
                 _ => _baseDamage,
             };
+
+            // Apply combo multiplier
+            float multiplier = GetComboMultiplier();
+            return Mathf.RoundToInt(baseDmg * multiplier);
+        }
+
+        private float GetComboMultiplier()
+        {
+            if (_comboCount <= 1) return 1f;
+            return 1f + (_comboCount - 1) * _comboDamageMultiplier;
         }
 
         private void OnDrawGizmosSelected()

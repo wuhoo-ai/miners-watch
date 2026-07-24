@@ -11,6 +11,8 @@ namespace MinersWatch
 
         [Header("Jump")]
         [SerializeField] private float jumpForce = 8f;
+        [SerializeField] private float coyoteTime = 0.1f;
+        [SerializeField] private float jumpBufferTime = 0.15f;
 
         [Header("Ground Check")]
         [SerializeField] private LayerMask groundLayer = 1 << 6; // Layer 6 = Ground
@@ -31,6 +33,11 @@ namespace MinersWatch
 
         private Vector2 moveInput;
 
+        // Coyote time and jump buffer
+        private float _coyoteTimer;
+        private float _jumpBufferTimer;
+        private bool _wasGrounded;
+
         // Attack animation
         [Header("Attack Animation")]
         [SerializeField] private Sprite[] _attackSprites;
@@ -38,6 +45,17 @@ namespace MinersWatch
         private Sprite _idleSprite;
         private Coroutine _attackRoutine;
         private bool _isAttacking;
+
+        public bool IsGrounded => isGrounded;
+        public float CoyoteTimer => _coyoteTimer;
+        public float JumpBufferTimer => _jumpBufferTimer;
+
+        /// <summary>Test-friendly jump attempt with explicit timers.</summary>
+        public bool TryJumpTest(float dt, bool grounded)
+        {
+            UpdateJumpTimers(dt, grounded);
+            return ExecuteJumpIfBuffered();
+        }
 
         private void Awake()
         {
@@ -127,6 +145,12 @@ namespace MinersWatch
                 isGrounded = Physics2D.OverlapCircle(transform.position, groundCheckRadius, groundLayer);
             }
 
+            // Update coyote time and jump buffer
+            UpdateJumpTimers(Time.fixedDeltaTime, isGrounded);
+
+            // Execute buffered jump if conditions met
+            ExecuteJumpIfBuffered();
+
             // Horizontal movement
             rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, rb.linearVelocity.y);
 
@@ -136,6 +160,8 @@ namespace MinersWatch
                 animator.SetBool("IsMoving", Mathf.Abs(moveInput.x) > 0.01f);
                 animator.SetBool("IsGrounded", isGrounded);
             }
+
+            _wasGrounded = isGrounded;
         }
 
         private void LateUpdate()
@@ -150,10 +176,42 @@ namespace MinersWatch
 
         private void TryJump()
         {
-            if (isGrounded)
+            // Buffer the jump input
+            _jumpBufferTimer = jumpBufferTime;
+        }
+
+        private void UpdateJumpTimers(float dt, bool grounded)
+        {
+            // Update coyote timer
+            if (grounded)
+            {
+                _coyoteTimer = coyoteTime;
+            }
+            else if (_wasGrounded && !grounded)
+            {
+                // Just left ground — start coyote countdown
+                _coyoteTimer = coyoteTime;
+            }
+            else
+            {
+                _coyoteTimer -= dt;
+            }
+
+            // Update jump buffer timer
+            _jumpBufferTimer -= dt;
+        }
+
+        private bool ExecuteJumpIfBuffered()
+        {
+            // Jump if within coyote time AND jump was buffered
+            if (_coyoteTimer > 0f && _jumpBufferTimer > 0f)
             {
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+                _coyoteTimer = 0f;
+                _jumpBufferTimer = 0f;
+                return true;
             }
+            return false;
         }
 
         private void PlayAttackAnimation()
