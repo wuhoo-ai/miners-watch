@@ -14,7 +14,7 @@ namespace MinersWatch
 
         [Header("Ground Check")]
         [SerializeField] private LayerMask groundLayer = 1 << 6; // Layer 6 = Ground
-        [SerializeField] private float groundCheckRadius = 0.05f;
+        [SerializeField] private float groundCheckRadius = 0.3f;
         [SerializeField] private Transform groundCheckPoint;
 
         [Header("Cave Bounds")]

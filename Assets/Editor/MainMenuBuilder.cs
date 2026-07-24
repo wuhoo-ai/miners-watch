@@ -186,11 +186,28 @@ namespace MinersWatch.Editor
             frt.offsetMin = frt.offsetMax = Vector2.zero;
             fill.GetComponent<Image>().color = new Color(0.3f, 0.7f, 0.3f);
 
+            // Handle Slide Area (required for touch/drag interaction)
+            var handleArea = new GameObject("Handle Slide Area", typeof(RectTransform));
+            handleArea.layer = L; handleArea.transform.SetParent(go.transform, false);
+            var hart = handleArea.GetComponent<RectTransform>();
+            hart.anchorMin = Vector2.zero; hart.anchorMax = Vector2.one;
+            hart.offsetMin = new Vector2(10, 0); hart.offsetMax = new Vector2(-10, 0);
+
+            var handle = new GameObject("Handle", typeof(RectTransform), typeof(Image));
+            handle.layer = L; handle.transform.SetParent(handleArea.transform, false);
+            var hrt = handle.GetComponent<RectTransform>();
+            hrt.sizeDelta = new Vector2(40, 0);
+            hrt.anchorMin = new Vector2(0, 0); hrt.anchorMax = new Vector2(0, 1);
+            var handleImg = handle.GetComponent<Image>();
+            handleImg.color = new Color(0.9f, 0.9f, 0.9f);
+
             var slider = go.GetComponent<Slider>();
             slider.fillRect = fill.GetComponent<RectTransform>();
+            slider.handleRect = hrt;
             slider.minValue = 0; slider.maxValue = 1; slider.value = defaultValue;
             slider.interactable = true;
-            slider.transition = Selectable.Transition.None;
+            slider.transition = Selectable.Transition.ColorTint;
+            slider.targetGraphic = handleImg;
 
             return go;
         }
