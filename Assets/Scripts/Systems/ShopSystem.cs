@@ -79,6 +79,12 @@ namespace MinersWatch
             return _upgrades.BuyUpgrade(type);
         }
 
+        /// <summary>Check if player can afford a given gold amount.</summary>
+        public bool CanAffordGold(int amount)
+        {
+            return _upgrades != null && _upgrades.Gold >= amount;
+        }
+
         /// <summary>Check if player can afford upgrade.</summary>
         public bool CanAffordUpgrade(UpgradeType type)
         {
